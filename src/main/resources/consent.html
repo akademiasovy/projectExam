@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cookie Consent</title>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #maindiv {
+            height: 90%;
+        text-align:center;
+            display:table;
+            width:100%;
+        }
+
+        #main h1 {display:table-cell; vertical-align:middle}
+    </style>
+    <script>
+        function agree() {
+            document.cookie = "CookieConsent=Accepted";
+            location.reload();
+        }
+    </script>
+</head>
+<body>
+    <div class="maindiv" id="maindiv">
+        <h1>This website uses cookies.</h1>
+        <button onClick="agree()">Ok</button>
+    </div>
+</body>
+</html>
