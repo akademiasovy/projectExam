@@ -61,13 +61,20 @@
 	transition: 0.15s;
      }
   </style>
+
+  <script>
+     function agree() {
+        document.cookie = "CookieConsent=Accepted";
+        location.reload();
+     }
+   </script>
 </head>
 
 <body>
   <div class="mainDiv">
      <p>This website uses cookies to recognise your browser or device.</p>
      <br><br><br><br><br>
-     <button class="agreeBtn">I Agree</button>
+     <button onClick="agree()" class="agreeBtn">I Agree</button>
   </div>
 </body>
 </html>
