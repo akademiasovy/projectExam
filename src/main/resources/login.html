@@ -1,10 +1,91 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
+  <meta charset="utf-8">
+  <title>Log in</title>
+  <style>
+     * {
+        font-family: sans-serif;
+     }
 
+     body {
+        background-color: #EAEAEA;
+     }
+
+     .mainDiv {
+	width: fit-content;
+	height: fit-content;
+	padding: 25px 50px 35px 50px;
+
+	background-color: white;
+        border-radius: 15px;
+	box-shadow: 0px 0px 15px 0px;
+
+	position: absolute;
+	top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+  	
+	margin: auto;
+
+        text-align: center;
+        vertical-align: middle;
+        line-height: 5px;
+	font-size: 22;
+     }
+
+     .loginBtn {
+        background-color: #4DDD78;
+	color: white;
+        width: 200px;
+        height: 50px;
+
+        text-decoration: none;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 16;
+
+	transition: 0.4s;
+     }
+
+     .loginBtn:hover {
+        background-color: white;
+	color: #4DDD78;
+
+        text-decoration: none;
+        border-style: solid;
+  	border-color: #4DDD78;
+        border-radius: 15px;
+
+	transition: 0.15s;
+     }
+
+     .title {
+        font-size: 28;
+     }
+
+     input {
+       width: 250px;
+       height: 50px;
+       padding: 12px 20px 12px 20px;
+       margin: 8px 0px 8px 0px;
+       display: inline-block;
+       border: 1px solid #CCCCCC;
+       border-radius: 6px;
+       font-size: 16;
+     }
+  </style>
+</head>
+
+<body>
+  <div class="mainDiv">
+     <p class="title">Log in</p>
+     <input type="text" name="username" placeholder="Username">
+     <br>
+     <input type="password" name="password" placeholder="Password">
+     <br><br><br><br>
+     <button class="loginBtn">Log in</button>
+  </div>
 </body>
 </html>
