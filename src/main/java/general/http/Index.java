@@ -2,6 +2,7 @@ package general.http;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import general.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,10 +18,13 @@ public class Index implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         try {
             List<String> cookies = exchange.getRequestHeaders().get("Cookie");
-            for (String cookie : cookies) {
-                if (cookie.contains("CookieConsent=Accepted")) {
-                    this.handleLogin(exchange);
-                    return;
+            if (cookies != null) {
+                for (String cookie : cookies) {
+                    if (cookie == null) continue;
+                    if (cookie.contains("CookieConsent=Accepted")) {
+                        this.handleLogin(exchange);
+                        return;
+                    }
                 }
             }
         } catch (Exception ex) {ex.printStackTrace();}
@@ -28,17 +32,7 @@ public class Index implements HttpHandler {
     }
 
     public void handleLogin(HttpExchange exchange) throws IOException {
-        InputStream is = Index.class.getClassLoader().getResourceAsStream("login.html");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[4096];
-        for (;;) {
-            int nread = is.read(buffer);
-            if (nread <= 0) {
-                break;
-            }
-            baos.write(buffer, 0, nread);
-        }
-        byte[] data = baos.toByteArray();
+        byte[] data = Utils.readResource("login.html");
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();
@@ -47,17 +41,7 @@ public class Index implements HttpHandler {
     }
 
     public void handleCookieConsent(HttpExchange exchange) throws IOException {
-        InputStream is = Index.class.getClassLoader().getResourceAsStream("consent.html");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[4096];
-        for (;;) {
-            int nread = is.read(buffer);
-            if (nread <= 0) {
-                break;
-            }
-            baos.write(buffer, 0, nread);
-        }
-        byte[] data = baos.toByteArray();
+        byte[] data = Utils.readResource("consent.html");
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();

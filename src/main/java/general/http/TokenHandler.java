@@ -12,10 +12,25 @@ public class TokenHandler {
 
     public static final String CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
+    private static TokenHandler instance;
+
+    public static TokenHandler getInstance() {
+        if (instance == null) instance = new TokenHandler();
+        return instance;
+    }
+
     private Map<String, String> tokens;
 
-    public TokenHandler() {
+    private TokenHandler() {
         this.tokens = new HashMap<String, String>();
+    }
+
+    public String getToken(String username) {
+        if (this.tokens.containsKey(username)) {
+            return this.tokens.get(username);
+        } else {
+            return null;
+        }
     }
 
     public boolean isAuthenticated(String token) {

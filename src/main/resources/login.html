@@ -55,7 +55,7 @@
             transition: 0.2s;
         }
 
-	.loginBtn:focus {
+	    .loginBtn:focus {
             outline: 0;
         }
 
@@ -70,7 +70,7 @@
             transition: 0.15s;
         }
 
-	input:focus {
+	    input:focus {
             outline: 0;
             width: 290px;
             border: 2px solid #4DDD78;
@@ -81,12 +81,24 @@
         }
     </style>
 
+    <script src="./resource/jquery"></script>
     <script>
         function login() {
-	    var username = document.getElementById("username").value;
-	    var password = document.getElementById("password").value;
-            console.log(username);
-            console.log(password);
+	        var username = document.getElementById("username").value;
+	        var password = document.getElementById("password").value;
+
+            var data = "username="+username+"&password="+password;
+
+            $.ajax({
+                type: "POST",
+                url: "./login",
+                data: data,
+                success: function(result) {
+                    console.log(result);
+                },
+                dataType: "text/html"
+            });
+
         }
     </script>
 </head>
