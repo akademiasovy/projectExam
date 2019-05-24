@@ -55,7 +55,7 @@
             transition: 0.2s;
         }
 
-	.loginBtn:focus {
+	    .loginBtn:focus {
             outline: 0;
         }
 
@@ -70,7 +70,7 @@
             transition: 0.15s;
         }
 
-	input:focus {
+	    input:focus {
             outline: 0;
             width: 290px;
             border: 2px solid #4DDD78;
@@ -81,12 +81,47 @@
         }
     </style>
 
+    <script src="./resource/jquery"></script>
     <script>
         function login() {
-	    var username = document.getElementById("username").value;
-	    var password = document.getElementById("password").value;
-            console.log(username);
-            console.log(password);
+	        var username = document.getElementById("username").value;
+	        var password = document.getElementById("password").value;
+
+            var data = "username="+username+"&password="+password;
+
+            $.ajax({
+                type: "POST",
+                url: "./login",
+                data: data,
+                success: function(result) {
+                    var splitString = result.split("&");
+                    var localStorage = window.localStorage
+                    for (i = 0; i < splitString.length; i++) {
+                        var splitPair = splitString[i].split("=");
+                        var key = splitPair[0];
+                        var value = splitPair[1];
+                        if (key == "token" || key == "firstname" || key == "lastname") {
+                            localStorage.setItem(key, value);
+                        }
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/",
+                        data: "token="+localStorage.getItem("token"),
+                        success: function(result) {
+                            replaceContent(result);
+                        },
+                        dataType: "text"
+                    });
+                },
+                dataType: "text"
+            });
+        }
+
+        function replaceContent(NC) {
+            document.open();
+            document.write(NC);
+            document.close();
         }
     </script>
 </head>
