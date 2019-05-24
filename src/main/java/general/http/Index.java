@@ -4,9 +4,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import general.Utils;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 public class Index implements HttpHandler {
@@ -22,13 +22,49 @@ public class Index implements HttpHandler {
                 for (String cookie : cookies) {
                     if (cookie == null) continue;
                     if (cookie.contains("CookieConsent=Accepted")) {
-                        this.handleLogin(exchange);
+                        if (exchange.getRequestMethod().equals("POST")) {
+                            this.handleMain(exchange);
+                        } else {
+                            this.handleLogin(exchange);
+                        }
                         return;
                     }
                 }
             }
         } catch (Exception ex) {ex.printStackTrace();}
         this.handleCookieConsent(exchange);
+    }
+
+    public void handleMain(HttpExchange exchange) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+        String line = br.readLine();
+        if (line == null || !line.matches(".+=.+")) {
+            exchange.sendResponseHeaders(401,0);
+            exchange.close();
+            return;
+        }
+
+        String[] clientData = line.split("&");
+        boolean authenticated = false;
+        for (String s : clientData) {
+            String key = s.split("=")[0];
+            if (key.equals("token")) {
+                String token = s.split("=")[1];
+                if (TokenHandler.getInstance().isAuthenticated(token)) authenticated = true;
+            }
+        }
+        if (!authenticated) {
+            exchange.sendResponseHeaders(401,0);
+            exchange.close();
+            return;
+        }
+
+        byte[] data = Utils.readResource("main.html");
+        exchange.sendResponseHeaders(200, data.length);
+        exchange.getResponseBody().write(data);
+        exchange.getResponseBody().flush();
+        exchange.getResponseBody().close();
+        exchange.close();
     }
 
     public void handleLogin(HttpExchange exchange) throws IOException {

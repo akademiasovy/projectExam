@@ -94,11 +94,34 @@
                 url: "./login",
                 data: data,
                 success: function(result) {
-                    console.log(result);
+                    var splitString = result.split("&");
+                    var localStorage = window.localStorage
+                    for (i = 0; i < splitString.length; i++) {
+                        var splitPair = splitString[i].split("=");
+                        var key = splitPair[0];
+                        var value = splitPair[1];
+                        if (key == "token" || key == "firstname" || key == "lastname") {
+                            localStorage.setItem(key, value);
+                        }
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/",
+                        data: "token="+localStorage.getItem("token"),
+                        success: function(result) {
+                            replaceContent(result);
+                        },
+                        dataType: "text"
+                    });
                 },
-                dataType: "text/html"
+                dataType: "text"
             });
+        }
 
+        function replaceContent(NC) {
+            document.open();
+            document.write(NC);
+            document.close();
         }
     </script>
 </head>

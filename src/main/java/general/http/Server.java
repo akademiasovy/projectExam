@@ -16,6 +16,7 @@ public class Server {
 
             FileManager fileManager = new FileManager();
             fileManager.addFile("jquery","jquery3.4.1.min.js");
+            fileManager.addFile("options.png","options.png");
             this.httpServer.createContext("/resource",fileManager);
 
             this.httpServer.start();

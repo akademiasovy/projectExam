@@ -42,7 +42,7 @@ public class TokenHandler {
         Credentials credentials = Database.getInstance().getCredentials(username);
 
         if (credentials != null) {
-            if (SHA256.hash(password).equals(password)) {
+            if (SHA256.hash(password).equals(credentials.getPassword())) {
                 String token = null;
                 while (token == null || this.tokens.containsValue(token)) {
                     token = "";
