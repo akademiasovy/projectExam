@@ -33,6 +33,15 @@ public class TokenHandler {
         }
     }
 
+    public String getUsername(String token) {
+        if (this.tokens.containsValue(token)) {
+            for (String username : this.tokens.keySet()) {
+                if (this.tokens.get(username).equals(token)) return username;
+            }
+        }
+        return null;
+    }
+
     public boolean isAuthenticated(String token) {
         return this.tokens.containsValue(token);
     }
