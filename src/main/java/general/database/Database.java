@@ -46,6 +46,9 @@ public class Database {
             sources.addAnnotatedClass(Groups.class);
             sources.addAnnotatedClass(GroupToExam.class);
             sources.addAnnotatedClass(Exam.class);
+            sources.addAnnotatedClass(Question.class);
+            sources.addAnnotatedClass(Answer.class);
+            sources.addAnnotatedClass(AssignedQuestion.class);
 
             Metadata metadata = sources.getMetadataBuilder().build();
             this.factory = metadata.getSessionFactoryBuilder().build();
@@ -173,6 +176,20 @@ public class Database {
         } finally {
             session.close();
         }
+        return null;
+    }
+
+    public Exam getExamById(int id) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        String query = "FROM Exam WHERE id="+id;
+
+        tx = session.beginTransaction();
+        List<Exam> examList = session.createQuery(query).list();
+        tx.commit();
+
+        if (examList.size() > 0) return examList.get(0);
         return null;
     }
 }

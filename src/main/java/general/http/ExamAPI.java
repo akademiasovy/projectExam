@@ -56,6 +56,9 @@ public class ExamAPI implements HttpHandler {
         if (reqURI.equals("/exams")) {
             this.handleExamList(exchange, username);
             return;
+        } else if (reqURI.matches("/exams/\\d+")) {
+            String[] splitURI = reqURI.split("/");
+            this.handleExamInfo(exchange,username,Integer.parseInt(splitURI[splitURI.length-1]));
         }
 
         exchange.sendResponseHeaders(400,0);
@@ -78,6 +81,48 @@ public class ExamAPI implements HttpHandler {
         }
 
         root.put("exams",examArray);
+
+        byte[] data = root.toJSONString().getBytes();
+        exchange.sendResponseHeaders(200, data.length);
+        exchange.getResponseBody().write(data);
+        exchange.getResponseBody().flush();
+        exchange.getResponseBody().close();
+        exchange.close();
+    }
+
+    public void handleExamInfo(HttpExchange exchange, String username, int examid) throws IOException {
+        List<Exam> exams = Database.getInstance().getExamsByGroups(Database.getInstance().getGroupsByStudent(
+                Database.getInstance().getStudentByUsername(username)), true);
+
+        Exam exam = Database.getInstance().getExamById(examid);
+
+        if (exam == null || exams.size() == 0) {
+            exchange.sendResponseHeaders(404, 0);
+            exchange.close();
+            return;
+        }
+
+        boolean authenticated = false;
+        for (Exam exam1 : exams) {
+            if (exam.getId() == exam1.getId()) {
+                authenticated = true;
+                break;
+            }
+        }
+        if (!authenticated) {
+            exchange.sendResponseHeaders(401, 0);
+            exchange.close();
+            return;
+        }
+
+        JSONObject root = new JSONObject();
+
+        root.put("id",exam.getId());
+        root.put("name",exam.getName());
+        root.put("description",exam.getDescription());
+        root.put("questions",exam.getQuestions());
+        root.put("start",exam.getStart().getTime());
+        root.put("end",exam.getEnd().getTime());
 
         byte[] data = root.toJSONString().getBytes();
         exchange.sendResponseHeaders(200, data.length);
