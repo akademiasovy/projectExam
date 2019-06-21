@@ -192,4 +192,34 @@ public class Database {
         if (examList.size() > 0) return examList.get(0);
         return null;
     }
+
+    public List<Question> getQuestionsByExam(Exam exam) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            String query = "FROM Question WHERE idexam=" + exam.getId();
+            tx = session.beginTransaction();
+            List<Question> questionList = session.createQuery(query).list();
+            tx.commit();
+
+            return questionList;
+        } catch (Exception ex) {ex.printStackTrace();}
+        return null;
+    }
+
+    public List<Answer> getAnswersByQuestion(Question question) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            String query = "FROM Answer WHERE idquestion=" + question.getId();
+            tx = session.beginTransaction();
+            List<Answer> answerList = session.createQuery(query).list();
+            tx.commit();
+
+            return answerList;
+        } catch (Exception ex) {ex.printStackTrace();}
+        return null;
+    }
 }
