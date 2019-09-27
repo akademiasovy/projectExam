@@ -8,7 +8,7 @@
 
         /*.mainDiv {
             width: 350px;
-            height: 255px; /*fit-content*/
+            height: 255px;
             padding: 50px 25px 60px 25px;
             background-color: white;
             border-radius: 15px;
@@ -35,7 +35,7 @@
             border-radius: 24px;
             box-shadow: 0px 0px 15px 2px;
             cursor: pointer;
-            font-size: 16;
+            font-size: 16px;
             transition: 0.2s;
         }
 
@@ -60,7 +60,7 @@
             text-decoration: none;
             border: 2px solid #AAAAAA;
             border-radius: 24px; /*12px*/
-            font-size: 16;
+            font-size: 16px;
             transition: 0.15s;
         }
 
@@ -163,6 +163,23 @@
             left: 0;
             text-align: center;
             display: table;
+        }
+
+        #centerDiv {
+            position: relative;
+            width: auto;
+            height: auto;
+            top: 30px;
+            left: 30px;
+            text-align: center;
+            display: inline;
+            margin: auto;
+
+            margin: auto;
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            border-radius: 3px;
         }
 
         #mainPlaceholder {

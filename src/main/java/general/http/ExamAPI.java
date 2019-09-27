@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExamAPI implements HttpHandler {
 
@@ -53,8 +55,14 @@ public class ExamAPI implements HttpHandler {
         String username = TokenHandler.getInstance().getUsername(token);
 
         String reqURI = exchange.getRequestURI().toString();
+        System.out.println(reqURI);
         if (reqURI.equals("/exams")) {
             this.handleExamList(exchange, username);
+            return;
+        } else if (reqURI.matches("/exams/\\d/")) {
+            try {
+                this.handleExamInfo(exchange, username, Integer.parseInt(/*Pattern.compile("\\/exams\\/([0-9]+)\\/").matcher(reqURI).group(0)*/reqURI.substring(7,reqURI.length()-1)));
+            } catch (Exception ex) {ex.printStackTrace();}
             return;
         }
 
@@ -80,6 +88,40 @@ public class ExamAPI implements HttpHandler {
         root.put("exams",examArray);
 
         byte[] data = root.toJSONString().getBytes();
+        exchange.sendResponseHeaders(200, data.length);
+        exchange.getResponseBody().write(data);
+        exchange.getResponseBody().flush();
+        exchange.getResponseBody().close();
+        exchange.close();
+    }
+
+    public void handleExamInfo(HttpExchange exchange, String username, int examID) throws IOException {
+        System.out.println("idk123");
+        Exam exam = null;
+
+        List<Exam> exams = Database.getInstance().getExamsByGroups(Database.getInstance().getGroupsByStudent(
+                Database.getInstance().getStudentByUsername(username)), true);
+        for (Exam exam1 : exams) {
+            if (exam1.getId() == examID) {
+                exam = exam1;
+                break;
+            }
+        }
+        if (exam == null) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+
+        JSONObject examObject = new JSONObject();
+        examObject.put("id",exam.getId());
+        examObject.put("name",exam.getName());
+        examObject.put("description",exam.getDescription());
+        examObject.put("questions",exam.getQuestions());
+        examObject.put("end",exam.getEnd());
+
+        byte[] data = examObject.toJSONString().getBytes();
+        System.out.println(data.length);
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();

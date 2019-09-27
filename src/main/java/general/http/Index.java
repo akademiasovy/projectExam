@@ -3,6 +3,8 @@ package general.http;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import general.Utils;
+import general.database.Database;
+import general.database.Student;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,10 +41,12 @@ public class Index implements HttpHandler {
         BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
         String line = br.readLine();
         if (line == null || !line.matches(".+=.+")) {
-            exchange.sendResponseHeaders(401,0);
+            exchange.sendResponseHeaders(401, 0);
             exchange.close();
             return;
         }
+
+        Student student = null;
 
         String[] clientData = line.split("&");
         boolean authenticated = false;
@@ -50,18 +54,23 @@ public class Index implements HttpHandler {
             String key = s.split("=")[0];
             if (key.equals("token")) {
                 String token = s.split("=")[1];
-                if (TokenHandler.getInstance().isAuthenticated(token)) authenticated = true;
+                if (TokenHandler.getInstance().isAuthenticated(token)) {
+                    authenticated = true;
+                    student = Database.getInstance().getStudentByUsername(TokenHandler.getInstance().getUsername(token));
+                }
             }
         }
         if (!authenticated) {
-            exchange.sendResponseHeaders(401,0);
+            exchange.sendResponseHeaders(401, 0);
             exchange.close();
             return;
         }
 
-        byte[] data = Utils.readResource("main.html");
-        exchange.sendResponseHeaders(200, data.length);
-        exchange.getResponseBody().write(data);
+        String data = new String(Utils.readResource("main.html"));
+        data = data.replaceAll("\\$FULLNAME\\$",student.getFirstname()+" "+student.getLastname());
+        byte[] bytes = data.getBytes();
+        exchange.sendResponseHeaders(200, bytes.length);
+        exchange.getResponseBody().write(bytes);
         exchange.getResponseBody().flush();
         exchange.getResponseBody().close();
         exchange.close();

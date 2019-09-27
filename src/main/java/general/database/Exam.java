@@ -11,6 +11,7 @@ public class Exam {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
     private String name;
+    private String description;
     private int questions;
     private Date start;
     private Date end;
@@ -19,9 +20,10 @@ public class Exam {
 
     }
 
-    public Exam(int id, String name, int questions, Date start, Date end) {
+    public Exam(int id, String name, String description, int questions, Date start, Date end) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.questions = questions;
         this.start = start;
         this.end = end;
@@ -41,6 +43,14 @@ public class Exam {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getQuestions() {
