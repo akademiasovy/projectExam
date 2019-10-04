@@ -1,4 +1,24 @@
-$( document ).ready(refreshExamList());
+$( document ).ready(function() {
+    refreshExamList();
+    setPositions();
+    window.onresize = function(event) {
+        setPositions();
+    };
+    new ResizeObserver(setPositions).observe(document.getElementById("centerDiv"));
+});
+
+function setPositions() {
+    var mainDiv = $("#main");
+    var examList = $("#examList");
+    var navbar = $("#navbar");
+
+    var centerDiv = $("#centerDiv");
+    /*centerDiv.css('left', (mainDiv.width()-examList.width())/2-centerDiv.width()/2);
+    centerDiv.css('top', (mainDiv.height()-navbar.height())/2-centerDiv.height()/2);*/
+
+    centerDiv.css('left', (mainDiv.width()-examList.width())/2-centerDiv.outerWidth()/2);
+    centerDiv.css('top', (mainDiv.height()-navbar.height())/2-centerDiv.outerHeight()/2);
+}
 
 function refreshExamList() {
     var localStorage = window.localStorage;
