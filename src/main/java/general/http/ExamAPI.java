@@ -118,7 +118,7 @@ public class ExamAPI implements HttpHandler {
         examObject.put("name",exam.getName());
         examObject.put("description",exam.getDescription());
         examObject.put("questions",exam.getQuestions());
-        examObject.put("end",exam.getEnd());
+        examObject.put("end",exam.getEnd().getTime());
 
         byte[] data = examObject.toJSONString().getBytes();
         System.out.println(data.length);
