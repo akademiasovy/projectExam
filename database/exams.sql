@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 27, 2019 at 05:33 PM
+-- Generation Time: Oct 04, 2019 at 05:36 PM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -30,13 +30,35 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `answer`;
 CREATE TABLE IF NOT EXISTS `answer` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `idquestion` int(11) DEFAULT NULL,
   `name` varchar(196) DEFAULT NULL,
   `correct` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idquestion` (`idquestion`) USING BTREE
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `answer`
+--
+
+INSERT INTO `answer` (`id`, `idquestion`, `name`, `correct`) VALUES
+(9, 1, '1', 1),
+(10, 1, '2', 0),
+(11, 1, '3', 0),
+(12, 1, '4', 0),
+(13, 2, '1', 0),
+(14, 2, '2', 1),
+(15, 2, '3', 0),
+(16, 2, '4', 0),
+(17, 3, '1', 0),
+(18, 3, '2', 0),
+(19, 3, '3', 1),
+(20, 3, '4', 0),
+(21, 4, '1', 0),
+(22, 4, '2', 0),
+(23, 4, '3', 0),
+(24, 4, '4', 1);
 
 -- --------------------------------------------------------
 
@@ -95,17 +117,18 @@ CREATE TABLE IF NOT EXISTS `exam` (
   `start` datetime DEFAULT NULL,
   `end` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `exam`
 --
 
 INSERT INTO `exam` (`id`, `name`, `description`, `questions`, `start`, `end`) VALUES
-(1, 'Random test', 'A test.', 30, '2019-05-31 00:00:00', '2019-09-30 00:00:00'),
-(2, 'Random test 2', 'A test.', 30, '2019-05-31 00:00:00', '2019-09-30 00:00:00'),
-(3, 'Test for tercia', 'A test.', 30, '2019-05-31 00:00:00', '2019-09-30 00:00:00'),
-(4, 'Random test 3', 'A test.', 30, '2018-05-31 00:00:00', '2019-09-30 00:00:00');
+(1, 'Random test', 'A test.', 30, '2019-05-31 00:00:00', '2019-11-26 00:00:00'),
+(2, 'Random test 2', 'A test.', 30, '2019-05-31 00:00:00', '2019-11-26 00:00:00'),
+(3, 'Test for tercia', 'A test.', 30, '2019-05-31 00:00:00', '2019-11-26 00:00:00'),
+(4, 'Random test 3', 'A test.', 30, '2018-05-31 00:00:00', '2019-11-26 00:00:00'),
+(5, 'Simple Exam', 'A simple exam with only 3 questions!', 3, '2019-10-04 00:00:00', '2019-12-23 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -118,7 +141,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `groups`
@@ -128,7 +151,8 @@ INSERT INTO `groups` (`id`, `name`) VALUES
 (1, 'prima'),
 (2, 'sekunda'),
 (3, 'tercia'),
-(4, 'kvarta');
+(4, 'kvarta'),
+(6, 'kvinta');
 
 -- --------------------------------------------------------
 
@@ -144,17 +168,18 @@ CREATE TABLE IF NOT EXISTS `grouptoexam` (
   PRIMARY KEY (`id`),
   KEY `idgroup` (`idgroup`),
   KEY `idexam` (`idexam`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `grouptoexam`
 --
 
 INSERT INTO `grouptoexam` (`id`, `idgroup`, `idexam`) VALUES
-(1, 4, 1),
-(2, 4, 2),
-(3, 3, 3),
-(4, 4, 4);
+(1, 5, 1),
+(2, 5, 2),
+(3, 5, 3),
+(4, 5, 4),
+(5, 5, 5);
 
 -- --------------------------------------------------------
 
@@ -170,6 +195,16 @@ CREATE TABLE IF NOT EXISTS `question` (
   PRIMARY KEY (`id`),
   KEY `idexam` (`idexam`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `question`
+--
+
+INSERT INTO `question` (`id`, `name`, `idexam`) VALUES
+(1, 'Select 1:', 5),
+(2, 'Select 2:', 5),
+(3, 'Select 3:', 5),
+(4, 'Select 4:', 5);
 
 -- --------------------------------------------------------
 
@@ -230,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `studenttogroup` (
 --
 
 INSERT INTO `studenttogroup` (`id`, `idstudent`, `idgroup`) VALUES
-(2, 3, 4);
+(2, 3, 5);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
