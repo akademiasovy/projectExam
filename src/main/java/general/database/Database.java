@@ -30,14 +30,14 @@ public class Database {
 
             Map<String, String> settings = new HashMap<String, String>();
             settings.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
-            //settings.put(Environment.URL, "jdbc:mysql://localhost:3306/exams");
-            settings.put(Environment.URL, "jdbc:mysql://192.168.0.110:3306/exams");
+            settings.put(Environment.URL, "jdbc:mysql://localhost:3306/exams");
+            //settings.put(Environment.URL, "jdbc:mysql://192.168.0.110:3306/exams");
             settings.put(Environment.USER, "root");
             settings.put(Environment.PASS, "");
-            //settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
-            settings.put(Environment.DIALECT, "org.hibernate.dialect.MariaDB53Dialect");
+            settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
+            //settings.put(Environment.DIALECT, "org.hibernate.dialect.MariaDB53Dialect");
             //DELETE BELOW:
-            settings.put(Environment.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+            //settings.put(Environment.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
 
             registryBuilder.applySettings(settings);
             this.registry = registryBuilder.build();
