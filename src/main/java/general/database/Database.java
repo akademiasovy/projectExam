@@ -30,10 +30,14 @@ public class Database {
 
             Map<String, String> settings = new HashMap<String, String>();
             settings.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
-            settings.put(Environment.URL, "jdbc:mysql://localhost:3306/exams");
+            //settings.put(Environment.URL, "jdbc:mysql://localhost:3306/exams");
+            settings.put(Environment.URL, "jdbc:mysql://192.168.0.110:3306/exams");
             settings.put(Environment.USER, "root");
             settings.put(Environment.PASS, "");
-            settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
+            //settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
+            settings.put(Environment.DIALECT, "org.hibernate.dialect.MariaDB53Dialect");
+            //DELETE BELOW:
+            settings.put(Environment.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
 
             registryBuilder.applySettings(settings);
             this.registry = registryBuilder.build();
@@ -42,10 +46,11 @@ public class Database {
 
             sources.addAnnotatedClass(Credentials.class);
             sources.addAnnotatedClass(Student.class);
-            sources.addAnnotatedClass(StudentToGroup.class);
-            sources.addAnnotatedClass(Groups.class);
-            sources.addAnnotatedClass(GroupToExam.class);
+            sources.addAnnotatedClass(Group.class);
             sources.addAnnotatedClass(Exam.class);
+            sources.addAnnotatedClass(Question.class);
+            sources.addAnnotatedClass(Answer.class);
+            sources.addAnnotatedClass(Result.class);
 
             Metadata metadata = sources.getMetadataBuilder().build();
             this.factory = metadata.getSessionFactoryBuilder().build();
@@ -55,15 +60,13 @@ public class Database {
         }
     }
 
-    public Student getStudentByUsername(String username) {
-        Credentials credentials = this.getCredentials(username);
-
+    public Student getStudentByID(int id) {
         Session session = factory.openSession();
         Transaction tx = null;
 
         try {
             tx = session.beginTransaction();
-            List<Student> studentList = session.createQuery("FROM Student WHERE id="+credentials.getIdstudent()).list();
+            List<Student> studentList = session.createQuery("FROM Student WHERE id="+id).list();
 
             if (studentList.size() >= 1) return studentList.get(0);
 
@@ -97,31 +100,43 @@ public class Database {
         return null;
     }
 
-    public List<Groups> getGroupsByStudent(Student student) {
+    public List<Exam> getExamsByStudent(Student student, boolean includeInactive, boolean includeDone) {
+        Set<Exam> examSet = new HashSet<Exam>();
+        Date date = new Date();
+
+        for (Group group : student.getGroupSet()) {
+            for (Exam exam : new HashSet<Exam>(group.getExamSet())) {
+                if (includeInactive || (exam.getStart().getTime() <= date.getTime() && exam.getEnd().getTime() >= date.getTime())) {
+                    if (includeDone) {
+                        examSet.add(exam);
+                    } else {
+                        boolean done = false;
+                        for (Result result : student.getResultSet()) {
+                            if (exam.equals(result.getExam())) {
+                                done = true;
+                                break;
+                            }
+                        }
+                        if (!done) examSet.add(exam);
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<Exam>(examSet);
+    }
+
+    public Exam getExamByID(int id) {
         Session session = factory.openSession();
         Transaction tx = null;
 
         try {
-            List<Integer> groupIDs = new ArrayList<Integer>();
-
             tx = session.beginTransaction();
-            List<StudentToGroup> stgList = session.createQuery("FROM StudentToGroup").list();
-            for (StudentToGroup stg : stgList) {
-                if (stg.getIdstudent() == student.getId()) groupIDs.add(stg.getIdgroup());
-            }
+            List<Exam> examList = session.createQuery("FROM Exam WHERE id="+id).list();
+
+            if (examList.size() >= 1) return examList.get(0);
+
             tx.commit();
-
-            List<Groups> studentGroups = new ArrayList<Groups>();
-            if (groupIDs.size() == 0) return studentGroups;
-
-            tx = session.beginTransaction();
-            List<Groups> groupList = session.createQuery("FROM Groups").list();
-            for (Groups group : groupList) {
-                if (groupIDs.contains(group.getId())) studentGroups.add(group);
-            }
-            tx.commit();
-
-            return studentGroups;
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();
             e.printStackTrace();
@@ -131,48 +146,22 @@ public class Database {
         return null;
     }
 
-    public List<Exam> getExamsByGroups(List<Groups> groups, boolean activeOnly) {
-        if (groups.size() == 0) return new ArrayList<Exam>();
-
+    public boolean saveResult(Result result) {
         Session session = factory.openSession();
         Transaction tx = null;
 
+        boolean saved = false;
         try {
-            StringBuilder queryBuilder = new StringBuilder("FROM GroupToExam WHERE idgroup="+groups.get(0).getId());
-            for (int i = 1; i < groups.size(); i++) {
-                queryBuilder.append(" or id="+groups.get(i).getId());
-            }
-
             tx = session.beginTransaction();
-            List<GroupToExam> gteList = session.createQuery(queryBuilder.toString()).list();
+            session.save(result);
             tx.commit();
-
-            if (gteList.size() == 0) return new ArrayList<Exam>();
-
-            queryBuilder = new StringBuilder("FROM Exam WHERE id="+gteList.get(0).getIdexam());
-            for (int i = 1; i < gteList.size(); i++) {
-                queryBuilder.append(" or id="+gteList.get(i).getIdexam());
-            }
-
-            tx = session.beginTransaction();
-            List<Exam> examList = session.createQuery(queryBuilder.toString()).list();
-            tx.commit();
-
-            if (!activeOnly) return examList;
-
-            List<Exam> filteredExamList = new ArrayList<Exam>();
-            Date date = new Date();
-            for (Exam exam : examList) {
-                if (exam.getStart().getTime() <= date.getTime() && exam.getEnd().getTime() >= date.getTime()) filteredExamList.add(exam);
-            }
-
-            return filteredExamList;
+            saved = true;
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();
             e.printStackTrace();
         } finally {
             session.close();
         }
-        return null;
+        return saved;
     }
 }

@@ -2,6 +2,7 @@ package general.database;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "exam", uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
@@ -16,6 +17,19 @@ public class Exam {
     private Date start;
     private Date end;
 
+    @OneToMany(mappedBy="exam", fetch = FetchType.EAGER)
+    private Set<Question> questionSet;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(name = "grouptoexam",
+            joinColumns = { @JoinColumn(name = "idexam") },
+            inverseJoinColumns = { @JoinColumn(name = "idgroup") }
+    )
+    private Set<Group> groupSet;
+
+    @OneToMany(mappedBy="exam", fetch = FetchType.EAGER)
+    private Set<Result> resultSet;
+
     public Exam() {
 
     }
@@ -27,6 +41,11 @@ public class Exam {
         this.questions = questions;
         this.start = start;
         this.end = end;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Exam && this.id == ((Exam) obj).id;
     }
 
     public int getId() {
@@ -75,5 +94,29 @@ public class Exam {
 
     public void setEnd(Date end) {
         this.end = end;
+    }
+
+    public Set<Question> getQuestionSet() {
+        return questionSet;
+    }
+
+    public void setQuestionSet(Set<Question> questionSet) {
+        this.questionSet = questionSet;
+    }
+
+    public Set<Group> getGroupSet() {
+        return groupSet;
+    }
+
+    public void setGroupSet(Set<Group> groupSet) {
+        this.groupSet = groupSet;
+    }
+
+    public Set<Result> getResultSet() {
+        return resultSet;
+    }
+
+    public void setResultSet(Set<Result> resultSet) {
+        this.resultSet = resultSet;
     }
 }

@@ -37,7 +37,7 @@ public class Login implements HttpHandler {
         String password = splitData[1].split("=")[1];
 
         if (TokenHandler.getInstance().authenticate(username,password)) {
-            Student student = Database.getInstance().getStudentByUsername(username);
+            Student student = Database.getInstance().getCredentials(username).getStudent();
             if (student == null) {
                 exchange.sendResponseHeaders(401,0);
                 exchange.close();

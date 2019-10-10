@@ -1,5 +1,7 @@
 package general.database;
 
+import general.PBKDF2WithHmacSHA256;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,18 +11,31 @@ public class Credentials {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
-    private int idstudent;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idstudent", referencedColumnName = "id")
+    private Student student;
+
     private String login;
+
     private String password;
+    private String salt;
+    private int iterations;
 
     public Credentials() {
 
     }
 
-    public Credentials(int idstudent, String login, String password) {
-        this.idstudent = idstudent;
+    public Credentials(String login, String password, String salt, int iterations) {
         this.login = login;
         this.password = password;
+        this.salt = salt;
+        this.iterations = iterations;
+    }
+
+    public boolean checkPassword(String password) {
+        //return this.password.equals(SHA256.hash(password));
+        return this.password.equals(PBKDF2WithHmacSHA256.hash(password, this.salt, this.iterations,this.password.length()/2));
     }
 
     public int getId() {
@@ -31,12 +46,12 @@ public class Credentials {
         this.id = id;
     }
 
-    public int getIdstudent() {
-        return idstudent;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setIdstudent(int idstudent) {
-        this.idstudent = idstudent;
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
     public String getLogin() {
@@ -53,5 +68,21 @@ public class Credentials {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public int getIterations() {
+        return iterations;
+    }
+
+    public void setIterations(int iterations) {
+        this.iterations = iterations;
     }
 }

@@ -1,12 +1,11 @@
 package general.http;
 
-import general.SHA256;
 import general.database.Credentials;
 import general.database.Database;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class TokenHandler {
 
@@ -20,9 +19,11 @@ public class TokenHandler {
     }
 
     private Map<String, String> tokens;
+    private SecureRandom random;
 
     private TokenHandler() {
         this.tokens = new HashMap<String, String>();
+        this.random = new SecureRandom();
     }
 
     public String getToken(String username) {
@@ -51,12 +52,12 @@ public class TokenHandler {
         Credentials credentials = Database.getInstance().getCredentials(username);
 
         if (credentials != null) {
-            if (SHA256.hash(password).equals(credentials.getPassword())) {
+            if (credentials.checkPassword(password)) {
                 String token = null;
                 while (token == null || this.tokens.containsValue(token)) {
                     token = "";
                     for (int i = 0; i < 32; i++) {
-                        token += (char)TokenHandler.CHARSET.charAt(new Random().nextInt(TokenHandler.CHARSET.length()));
+                        token += (char)TokenHandler.CHARSET.charAt(this.random.nextInt(TokenHandler.CHARSET.length()));
                     }
                 }
                 this.tokens.put(username,token);

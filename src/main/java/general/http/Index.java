@@ -56,7 +56,7 @@ public class Index implements HttpHandler {
                 String token = s.split("=")[1];
                 if (TokenHandler.getInstance().isAuthenticated(token)) {
                     authenticated = true;
-                    student = Database.getInstance().getStudentByUsername(TokenHandler.getInstance().getUsername(token));
+                    student = Database.getInstance().getCredentials(TokenHandler.getInstance().getUsername(token)).getStudent();
                 }
             }
         }
