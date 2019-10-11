@@ -19,6 +19,7 @@ public class Result {
     private Exam exam;
 
     private int correct;
+    private int questions;
 
     public Result() {
 
@@ -61,5 +62,13 @@ public class Result {
 
     public void setCorrect(int correct) {
         this.correct = correct;
+    }
+
+    public int getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(int questions) {
+        this.questions = questions;
     }
 }

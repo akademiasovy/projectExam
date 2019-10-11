@@ -1,0 +1,6 @@
+{
+	"databaseURL": "jdbc:mysql://localhost:3306/exams",
+    "databaseUser": "root",
+    "databasePass": "",
+    "databaseDialect": "org.hibernate.dialect.MySQL5Dialect",
+}

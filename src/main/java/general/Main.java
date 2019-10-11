@@ -13,7 +13,7 @@ public class Main {
         for (Exam exam : exams) {
             System.out.println(exam.getName());
         }*/
-
+        Config.getInstance();
         Server server = new Server();
     }
 

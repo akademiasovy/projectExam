@@ -182,6 +182,10 @@ function getCurrentQuestion() {
             var examQuestionNum = $("#examQuestionNum");
             examQuestionNum.text("Question "+(json.number+1)+examQuestionNum.text().substring(examQuestionNum.text().lastIndexOf("/")));
 
+            var questions = parseInt($(examQuestionNum).text().substring(examQuestionNum.text().lastIndexOf("/")+1));
+            console.log(questions);
+            if (parseInt(json.number)+1==questions) $("#nextQuestionBtn").text("Finish exam");
+
             $("#centerDiv").removeClass("skeleton");
         },
         dataType: "text"

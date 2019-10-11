@@ -45,6 +45,7 @@ public class ExamManager {
         result.setStudent(exam.getStudent());
         result.setExam(exam.getExam());
         result.setCorrect(exam.getCorrect());
+        result.setQuestions(exam.getExam().getQuestions());
 
         if (Database.getInstance().saveResult(result)) this.exams.remove(exam);
         return result;

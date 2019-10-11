@@ -2,9 +2,7 @@ package general;
 
 import general.http.Index;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class Utils {
 
@@ -20,6 +18,20 @@ public class Utils {
             baos.write(buffer, 0, nread);
         }
         return baos.toByteArray();
+    }
+
+    public static String readResourceAsString(String name) throws IOException {
+        StringBuilder builder = new StringBuilder();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(Utils.class.getClassLoader().
+                getResourceAsStream(name)));
+        String line;
+        while ((line = br.readLine()) != null) {
+            builder.append(line);
+        }
+        br.close();
+
+        return builder.toString();
     }
 
 }

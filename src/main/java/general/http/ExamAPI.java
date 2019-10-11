@@ -301,8 +301,19 @@ public class ExamAPI implements HttpHandler {
     }
 
     public void handleResultList(HttpExchange exchange, String username) throws IOException {
-        List<Result> results = new ArrayList<>(Database.getInstance().getCredentials(username).getStudent().getResultSet());
-        results.sort((o1, o2) -> -Integer.compare(o1.getId(),o2.getId()));
+        List<Result> results = new ArrayList<Result>(Database.getInstance().getCredentials(username).getStudent().getResultSet());
+        Collections.sort(results, new Comparator<Result>() {
+            @Override
+            public int compare(Result o1, Result o2) {
+                if (o1.getId() > o2.getId()) {
+                    return -1;
+                } else if (o1.getId() < o2.getId()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
 
         JSONObject root = new JSONObject();
         JSONArray resultArray = new JSONArray();
