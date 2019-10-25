@@ -291,8 +291,11 @@ public class ExamAPI implements HttpHandler {
                         exchange.close();
                     } else {
                         ExamManager.getInstance().finalizeExam(exam);
-                        //TODO: Send URI to results
-                        exchange.sendResponseHeaders(201, 0);
+                        byte[] data = ("./exams/results/"+exam.getExam().getId()).getBytes();
+                        exchange.sendResponseHeaders(201, data.length);
+                        exchange.getResponseBody().write(data);
+                        exchange.getResponseBody().flush();
+                        exchange.getResponseBody().close();
                         exchange.close();
                     }
                 }
@@ -340,8 +343,9 @@ public class ExamAPI implements HttpHandler {
     public void handleResultInfo(HttpExchange exchange, String username, int examID) throws IOException {
         Set<Result> results = Database.getInstance().getCredentials(username).getStudent().getResultSet();
 
+        System.out.println("size: "+results.size());
         for (Result result : results) {
-            if (result.getId() == examID) {
+            if (result.getExam().getId() == examID) {
                 JSONObject resultObject = new JSONObject();
                 resultObject.put("id",result.getExam().getId());
                 resultObject.put("name",result.getExam().getName());

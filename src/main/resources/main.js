@@ -124,7 +124,24 @@ function sendAnswer() {
                     } else if (jqXHR.status == 201) {
                         clearInterval(interval);
                         $("#centerDiv").html('<h1 id="resultName"></h1> <div class="progressBar"> <span id="resultPercentage" class="percentage"></span> <div id="resultBar" class="bar"></div> </div> <span id="resultTime" style="font-size: 18px;"></span> <br> <button class="greenBtn" onclick="window.location.href = window.location.href;" style="margin-top: 40px;">Close</button>');
-                        //TODO: Show result
+
+                        $.ajax({
+                            type: "POST",
+                            url: jqXHR.responseText,
+                            data: "token="+window.localStorage.getItem("token"),
+                            success: function(result, textStatus, jqXHR2) {
+                                //if (jqXHR.status != 200) window.location.href = window.location.href;
+                                var json = jqXHR2.responseText;
+
+                                $("#resultName").text(json.name);
+                            },
+                            error: function() {
+                                //window.location.href = window.location.href;
+                            },
+                            dataType: "text"
+                        });
+
+                        $("#centerDiv").removeClass("skeleton");
                     }
                 },
                 error: function() {
