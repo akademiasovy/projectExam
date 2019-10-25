@@ -34,8 +34,8 @@ public class Credentials {
     }
 
     public boolean checkPassword(String password) {
-        //return this.password.equals(SHA256.hash(password));
-        return this.password.equals(PBKDF2WithHmacSHA256.hash(password, this.salt, this.iterations,this.password.length()/2));
+        //return this.password.equals(SHA256.hexHash(password));
+        return this.password.equals(PBKDF2WithHmacSHA256.hexHash(password, this.salt, this.iterations,this.password.length()/2));
     }
 
     public int getId() {

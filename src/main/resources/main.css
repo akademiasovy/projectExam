@@ -18,6 +18,7 @@
             background-color: #FFFFFF;
             box-shadow: 0px 0px 10px 0px;
             z-index: 5;
+            user-select: none;
         }
 
         .navbar-title {
@@ -300,6 +301,37 @@
                  1px 1px 1px #000;
             user-select: none;
         }
+
+        .progressBar {
+             padding: 0px;
+             border: none;
+             border-radius: 20px;
+             height: 40px;
+             background-color: #A7A7A7;
+             margin: 40px 0px 20px 0px;
+
+        }
+
+        .progressBar .percentage {
+             position: absolute;
+             left: 0;
+             width: 100%;
+             height: 40px;
+             line-height: 40px;
+             color: white;
+             font-size: 22px;
+             text-shadow: 0px 0px 2px black;
+        }
+
+        .progressBar .bar {
+             width: 0%;
+             height: 40px;
+             background-color: #4DDD78;
+             border-radius: 20px;
+             box-sizing: border-box;
+             border: solid 2px #A7A7A7;
+        }
+
 
         .greenBtn {
             background-color: #4DDD78;

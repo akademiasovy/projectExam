@@ -11,7 +11,7 @@ public class PBKDF2WithHmacSHA256 {
 
     private static SecureRandom random = new SecureRandom();
 
-    public static String hash(String password, String salt, int iterations, int derivedKeyLength)  {
+    public static String hexHash(String password, String salt, int iterations, int derivedKeyLength)  {
         try {
             PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
             gen.init(password.getBytes("UTF-8"), salt.getBytes("UTF-8"), iterations);

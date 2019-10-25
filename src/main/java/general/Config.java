@@ -16,9 +16,11 @@ public class Config {
     }
 
     private Map<String, Object> settings;
+    private Map<String, String> hibernateSettings;
 
     private Config() {
         this.settings = new HashMap<String, Object>();
+        this.hibernateSettings = new HashMap<String, String>();
         this.load();
     }
 
@@ -28,8 +30,16 @@ public class Config {
             JSONObject root = (JSONObject) parser.parse(Utils.readResourceAsString("config"));
 
             for (Object object : root.keySet()) {
-                if (!(object instanceof String)) continue;
+                if (!(object instanceof String) || "hibernate".equals(object)) continue;
                 this.settings.put((String)object,root.get(object));
+            }
+
+            JSONObject hibernateRoot = (JSONObject) root.get("hibernate");
+            if (hibernateRoot != null) {
+                for (Object object : hibernateRoot.keySet()) {
+                    if (!(object instanceof String)) continue;
+                    this.hibernateSettings.put((String)object,String.valueOf(hibernateRoot.get(object)));
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -41,14 +51,7 @@ public class Config {
     }
 
     public Map<String, String> getHibernateConfig() {
-        Map<String, String> config = new HashMap<String, String>();
-        for (String s : this.settings.keySet()) {
-            if (s.startsWith("hibernate_")) {
-                if (!(this.settings.get(s) instanceof String)) continue;
-                config.put(s.substring(10),(String)this.settings.get(s));
-            }
-        }
-        return config;
+        return this.hibernateSettings;
     }
 
 }

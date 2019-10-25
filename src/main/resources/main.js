@@ -122,7 +122,9 @@ function sendAnswer() {
                         getCurrentQuestion();
                         document.getElementById("nextQuestionBtn").disabled = false;
                     } else if (jqXHR.status == 201) {
-                        location.reload();
+                        clearInterval(interval);
+                        $("#centerDiv").html('<h1 id="resultName"></h1> <div class="progressBar"> <span id="resultPercentage" class="percentage"></span> <div id="resultBar" class="bar"></div> </div> <span id="resultTime" style="font-size: 18px;"></span> <br> <button class="greenBtn" onclick="window.location.href = window.location.href;" style="margin-top: 40px;">Close</button>');
+                        //TODO: Show result
                     }
                 },
                 error: function() {
@@ -154,8 +156,8 @@ function startExam() {
         },
         error: function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.status == 409) {
-                clearInterval(interval);
-                location.reload();
+                //clearInterval(interval);
+                window.location.href = window.location.href;
             } else {
                 document.getElementById("takeExamBtn").disabled = false;
             }
@@ -276,5 +278,6 @@ function selectExam(id) {
 
 function logOut() {
     window.localStorage.clear();
-    location.reload();
+    window.location.href = window.location.href;
+    //location.reload(true);
 }

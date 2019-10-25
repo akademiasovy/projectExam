@@ -1,11 +1,11 @@
 package general;
 
-import general.http.Server;
+import general.net.server.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        //System.out.println(PBKDF2WithHmacSHA256.hash("password","salt",4096,32));
+        //System.out.println(PBKDF2WithHmacSHA256.hexHash("password","salt",4096,32));
 
         /*Student student = Database.getInstance().getStudentByUsername("rm");
         List<Group> groups = Database.getInstance().getGroupsByStudent(student);
@@ -14,7 +14,7 @@ public class Main {
             System.out.println(exam.getName());
         }*/
         Config.getInstance();
-        Server server = new Server();
+        Server server = new HTTPServer();
     }
 
 }

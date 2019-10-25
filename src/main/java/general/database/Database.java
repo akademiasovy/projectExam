@@ -32,13 +32,9 @@ public class Database {
             Map<String, String> settings = new HashMap<String, String>();
             settings.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
             settings.put(Environment.URL, (String)Config.getInstance().get("databaseURL"));
-            //settings.put(Environment.URL, "jdbc:mysql://192.168.0.110:3306/exams");
             settings.put(Environment.USER, (String)Config.getInstance().get("databaseUser"));
             settings.put(Environment.PASS, (String)Config.getInstance().get("databasePass"));
             settings.put(Environment.DIALECT, (String)Config.getInstance().get("databaseDialect"));
-            //settings.put(Environment.DIALECT, "org.hibernate.dialect.MariaDB53Dialect");
-            //DELETE BELOW:
-            settings.put(Environment.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
 
             settings.putAll(Config.getInstance().getHibernateConfig());
 
