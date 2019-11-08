@@ -59,7 +59,24 @@ public class Database {
         }
     }
 
-    public Student getStudentByID(int id) {
+    //TODO: Delete
+    public void deleteResults() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+            session.createQuery("DELETE FROM Result").executeUpdate();
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
+    public Student getStudent(int id) {
         Session session = factory.openSession();
         Transaction tx = null;
 
@@ -99,7 +116,7 @@ public class Database {
         return null;
     }
 
-    public List<Exam> getExamsByStudent(Student student, boolean includeInactive, boolean includeDone) {
+    public List<Exam> getExams(Student student, boolean includeInactive, boolean includeDone) {
         Set<Exam> examSet = new HashSet<Exam>();
         Date date = new Date();
 
@@ -125,7 +142,7 @@ public class Database {
         return new ArrayList<Exam>(examSet);
     }
 
-    public Exam getExamByID(int id) {
+    public Exam getExam(int id) {
         Session session = factory.openSession();
         Transaction tx = null;
 

@@ -65,6 +65,104 @@ function updateUI() {
     optionsPanel.css('left', mainDiv.width()-examList.width()-optionsPanel.outerWidth());
 }
 
+function showSettings() {
+    $("#centerDiv").html('<h1>Settings</h1> <p style="margin-bottom: 41px;"></p> <p style="text-align: center; font-size: 24px; font-weight: bold;">Change password</p> <input type="password" id="oldPassword" name="password" placeholder="Old password"> <p style="margin: 0px 0px 15px 0px;"></p> <input type="password" id="newPassword" name="password" oninput="checkPassword()" placeholder="New password"> <p style="margin: 0px 0px 5px 0px;"></p> <input type="password" id="confirmPassword" name="password" placeholder="Confirm password"> <p id="error" style="display: none;"></p>  <p style="margin: 0px 0px 35px 0px;"></p> <button onclick="changePassword()" class="greenBtn" style="width: 200px;">Change password</button> <ul class="requirements"><li id="reqHeader" style="font-weight: bold; margin-bottom: 5px;">Requirements:</li><li id="reqLength">At least 8 characters</li><li id="reqLower">At least 1 lowercase letter</li><li id="reqUpper">At least 1 uppercase letter</li><li id="reqDigit">At least 1 digit</li></ul>');
+    $('#centerDiv').css('display','inline');
+    $('#mainPlaceholder').css('display','none');
+}
+
+function showResults() {
+    $('#centerDiv').addClass("skeleton");
+    $('#centerDiv').html("<h1>Results</h1><div style='max-height: 400px; overflow: auto;'><table id='resultsTable' style='width: 100%;' class='sortable-theme-light' data-sortable><thead><th>#</th><th>Exam</th><th>Score</th></thead><tbody id='resultsTBody'></tbody></table></div>");
+    $('#centerDiv').css('display','inline');
+    $('#mainPlaceholder').css('display','none');
+
+    $.ajax({
+            type: "POST",
+            url: "./exams/results",
+            data: "token="+window.localStorage.getItem("token"),
+            success: function(result) {
+                var json = JSON.parse(result);
+                var results = json.results;
+
+                var tbody = $("#resultsTBody");
+
+                for (var i = 0; i < results.length; i++) {
+                    var number = results[i].number;
+                    var exam = results[i].name;
+                    var score = (Math.floor(parseFloat(results[i].correct)/parseFloat(results[i].questions)*100))+"%";
+                    tbody.append("<tr><td>"+number+"</td><td>"+exam+"</td><td>"+score+"</td></tr>");
+                }
+
+                Sortable.init();
+                $("#centerDiv").removeClass("skeleton");
+            },
+            error: function() {
+                  $('#centerDiv').css('display','none');
+                  $('#mainPlaceholder').css('display','table-cell');
+            },
+            dataType: "text"
+    });
+}
+
+function changePassword() {
+    var oldPassword = $("#oldPassword");
+    var newPassword = $("#newPassword");
+    var confirmPassword = $("#confirmPassword");
+
+    var error = $("#error");
+    var errorMsg;
+
+    if (newPassword.val().length < 8) {
+        errorMsg = "The password must be at least 8 characters long!";
+    } else if (!newPassword.val().match(/[a-z]/g)) {
+        errorMsg = "The password must contain at least 1 lowercase letter!"
+    } else if (!newPassword.val().match(/[A-Z]/g)) {
+        errorMsg = "The password must contain at least 1 uppercase letter!"
+    } else if (!newPassword.val().match(/[0-9]/g)) {
+        errorMsg = "The password must contain at least 1 digit!"
+    } else if (newPassword.val() != confirmPassword.val()) {
+        errorMsg = "The passwords don't match!";
+    }
+
+    if (errorMsg != undefined) {
+        $("#error").text(errorMsg);
+        $("#error").hide().fadeIn(150);
+        newPassword.css("border-color","#CF5454");
+        confirmPassword.css("border-color","#CF5454");
+        return;
+    }
+
+    //TODO: Change password
+}
+
+function checkPassword() {
+    var password = $("#newPassword").val();
+    if (password.length < 8) {
+        $("#reqLength").css("color","");
+    } else {
+        $("#reqLength").css("color","#4DDD78");
+    }
+
+    if (!password.match(/[a-z]/g)) {
+        $("#reqLower").css("color","");
+    } else {
+        $("#reqLower").css("color","#4DDD78");
+    }
+
+    if (!password.match(/[A-Z]/g)) {
+        $("#reqUpper").css("color","");
+    } else {
+        $("#reqUpper").css("color","#4DDD78");
+    }
+
+    if (!password.match(/[0-9]/g)) {
+        $("#reqDigit").css("color","");
+    } else {
+        $("#reqDigit").css("color","#4DDD78");
+    }
+}
+
 function selectAnswer(answer) {
     if (answer == null || answer == undefined) return;
 
@@ -123,25 +221,56 @@ function sendAnswer() {
                         document.getElementById("nextQuestionBtn").disabled = false;
                     } else if (jqXHR.status == 201) {
                         clearInterval(interval);
-                        $("#centerDiv").html('<h1 id="resultName"></h1> <div class="progressBar"> <span id="resultPercentage" class="percentage"></span> <div id="resultBar" class="bar"></div> </div> <span id="resultTime" style="font-size: 18px;"></span> <br> <button class="greenBtn" onclick="window.location.href = window.location.href;" style="margin-top: 40px;">Close</button>');
+                        $("#centerDiv").addClass("skeleton");
+                        $("#centerDiv").html('<h1 id="resultName">skeleton</h1> <div id="resultBar" class="progressBar"></div> <div id="resultInfo"> <span id="resultCorrect" style="font-size: 18px;"></span> <br> <span id="resultIncorrect" style="font-size: 18px;"></span> <br> <span id="resultQuestions" style="font-size: 18px;"></span> </div> <button class="greenBtn" onclick="window.location.href = window.location.href;"">Close</button>');
 
                         $.ajax({
                             type: "POST",
                             url: jqXHR.responseText,
                             data: "token="+window.localStorage.getItem("token"),
-                            success: function(result, textStatus, jqXHR2) {
-                                //if (jqXHR.status != 200) window.location.href = window.location.href;
-                                var json = jqXHR2.responseText;
+                            success: function(result, textStatus, jqXHR) {
+                                if (jqXHR.status != 200) window.location.href = window.location.href;
+                                var json = JSON.parse(jqXHR.responseText);
 
                                 $("#resultName").text(json.name);
+
+                                var bar = new ProgressBar.Circle(document.getElementById("resultBar"), {
+                                  color: '#aaa',
+                                  // This has to be the same size as the maximum width to
+                                  // prevent clipping
+                                  strokeWidth: 6,
+                                  trailWidth: 6,
+                                  easing: 'easeInOut',
+                                  duration: 1000,
+                                  text: {
+                                    autoStyleContainer: false
+                                  },
+                                  from: { color: '#FF3333'},
+                                  to: { color: '#4DDD78'},
+                                  // Set default step function for all animate calls
+                                  step: function(state, circle) {
+                                    circle.path.setAttribute('stroke', state.color);
+
+                                    var value = Math.round(circle.value()*100);
+                                    circle.setText(value+"%");
+                                  }
+                                });
+                                bar.text.style.fontFamily = 'sans-serif';
+                                bar.text.style.fontSize = '24px';
+                                bar.animate(Math.floor(parseFloat(json.correct)/parseFloat(json.questions)*100)/100);
+
+                                //$("#resultTime").text("Completed in "+$("#examTime").text()+"!");
+                                $("#resultCorrect").html("<b>Correct answers: </b><b style='color: #4DDD78;'>"+parseInt(json.correct)+"</b>");
+                                $("#resultIncorrect").html("<b>Incorrect answers: </b><b style='color: #FF3333;'>"+(parseInt(json.questions)-parseInt(json.correct))+"</b>");
+                                $("#resultQuestions").html("<b>Total questions: "+parseInt(json.questions)+"</b>");
+
+                                $("#centerDiv").removeClass("skeleton");
                             },
                             error: function() {
-                                //window.location.href = window.location.href;
+                                window.location.href = window.location.href;
                             },
                             dataType: "text"
                         });
-
-                        $("#centerDiv").removeClass("skeleton");
                     }
                 },
                 error: function() {
@@ -202,7 +331,6 @@ function getCurrentQuestion() {
             examQuestionNum.text("Question "+(json.number+1)+examQuestionNum.text().substring(examQuestionNum.text().lastIndexOf("/")));
 
             var questions = parseInt($(examQuestionNum).text().substring(examQuestionNum.text().lastIndexOf("/")+1));
-            console.log(questions);
             if (parseInt(json.number)+1==questions) $("#nextQuestionBtn").text("Finish exam");
 
             $("#centerDiv").removeClass("skeleton");

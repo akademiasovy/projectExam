@@ -55,10 +55,11 @@ public class ExamAPI implements HttpHandler {
         }
 
         String username = TokenHandler.getInstance().getUsername(token);
-
         String reqURI = exchange.getRequestURI().toString();
+
         //TODO: Delete SOUT
         System.out.println(reqURI);
+
         if (reqURI.equals("/exams")) {
             this.handleExamList(exchange, username);
             return;
@@ -106,7 +107,7 @@ public class ExamAPI implements HttpHandler {
     }
 
     public void handleExamList(HttpExchange exchange, String username) throws IOException {
-        List<Exam> exams = Database.getInstance().getExamsByStudent(Database.getInstance().getCredentials(username).getStudent(), false, false);
+        List<Exam> exams = Database.getInstance().getExams(Database.getInstance().getCredentials(username).getStudent(), false, false);
 
         JSONObject root = new JSONObject();
 
@@ -132,7 +133,7 @@ public class ExamAPI implements HttpHandler {
     public void handleExamInfo(HttpExchange exchange, String username, int examID) throws IOException {
         Exam exam = null;
 
-        List<Exam> exams = Database.getInstance().getExamsByStudent(Database.getInstance().getCredentials(username).getStudent(), true, true);
+        List<Exam> exams = Database.getInstance().getExams(Database.getInstance().getCredentials(username).getStudent(), true, true);
         for (Exam exam1 : exams) {
             if (exam1.getId() == examID) {
                 exam = exam1;
@@ -164,7 +165,7 @@ public class ExamAPI implements HttpHandler {
         Student student = Database.getInstance().getCredentials(username).getStudent();
         Exam exam = null;
 
-        List<Exam> exams = Database.getInstance().getExamsByStudent(Database.getInstance().getCredentials(username).getStudent(), false, false);
+        List<Exam> exams = Database.getInstance().getExams(Database.getInstance().getCredentials(username).getStudent(), false, false);
         for (Exam exam1 : exams) {
             if (exam1.getId() == examID) {
                 exam = exam1;
@@ -327,8 +328,7 @@ public class ExamAPI implements HttpHandler {
 
         for (int i = 0; i < results.size(); i++) {
             JSONObject resultObject = new JSONObject();
-            resultObject.put("number",i);
-            resultObject.put("id",results.get(i).getExam().getId());
+            resultObject.put("number",results.size()-i);
             resultObject.put("name",results.get(i).getExam().getName());
             resultObject.put("correct",results.get(i).getCorrect());
             resultObject.put("questions",results.get(i).getExam().getQuestions());
@@ -347,7 +347,7 @@ public class ExamAPI implements HttpHandler {
         Set<Result> results = Database.getInstance().getCredentials(username).getStudent().getResultSet();
 
         for (Result result : results) {
-            if (result.getId() == examID) {
+            if (result.getExam().getId() == examID) {
                 JSONObject resultObject = new JSONObject();
                 resultObject.put("id",result.getExam().getId());
                 resultObject.put("name",result.getExam().getName());

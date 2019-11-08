@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Log in</title>
 
-    <script src="./resource/jquery"></script>
+    <script src="./resources/jquery"></script>
     <script defer>
         var localStorage = window.localStorage;
         if (localStorage.getItem("token") != null) {
@@ -134,6 +134,7 @@
             font-size: 16;
             transition: 0.2s;
             bottom: 30px;
+            user-select: none;
         }
 
         #loginBtn:hover {
@@ -215,7 +216,7 @@
     <p id="error" style="display: none;">The username or password is incorrect.</p>
     <!--<br><br><br><br><br><br><br><br><br><br><br>-->
     <p style="margin-bottom: 50px;"></p>
-    <button onClick="login()" id="loginBtn">Log in</button>
+    <button onclick="login()" id="loginBtn">Log in</button>
 </div>
 </body>
 

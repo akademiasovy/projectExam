@@ -20,8 +20,8 @@ public class StartedExam {
     public StartedExam(int studentID, int examID) {
         this.startTime = new Date();
 
-        this.student = Database.getInstance().getStudentByID(studentID);
-        this.exam = Database.getInstance().getExamByID(examID);
+        this.student = Database.getInstance().getStudent(studentID);
+        this.exam = Database.getInstance().getExam(examID);
 
         this.questions = new QAPair[this.exam.getQuestions()];
         List<Question> randomQuestions = new ArrayList<Question>(this.exam.getQuestionSet());

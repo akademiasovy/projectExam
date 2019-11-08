@@ -3,9 +3,12 @@
 <head>
     <meta charset="utf-8">
     <title>Exams</title>
-    <link rel="stylesheet" type="text/css" href="./resource/main.css">
-    <script src="./resource/jquery"></script>
-    <script src="./resource/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="./resources/main.css">
+    <link rel="stylesheet" type="text/css" href="./resources/sortable-light.css"/>
+    <script src="./resources/jquery"></script>
+    <script src="./resources/progressbar.js"></script>
+    <script src="./resources/main.js"></script>
+    <script src="./resources/sortable.min.js"></script>
 </head>
 
 <body>
@@ -13,34 +16,42 @@
         <p>Exams</p>
     </div>
     <ul id="navbar" class="navbar">
-        <li class="navbar-title"><p>Welcome $FULLNAME$</p></li>
-        <li class="navbar-item"><button id="optionsPanelBtn" onclick="toggleOptionsPanel()"><img style="width: 50%; padding: 0; margin: 0 auto; top: 0;" src="./resource/options.png"></button></li>
+        <li class="navbar-title"><p>Logged in as $FULLNAME$</p></li>
+        <li class="navbar-item"><button id="optionsPanelBtn" onclick="toggleOptionsPanel()"><img style="width: 50%; padding: 0; margin: 0 auto; top: 0;" src="./resources/options.png"></button></li>
     </ul>
     
     <div id="main">
         <h1 id="mainPlaceholder">Select an exam</h1>
-        <div id="centerDiv" class="skeleton">
+
+        <div id="centerDiv"></div>
+
+        <!-- <div id="centerDiv" class="skeleton">
             <input id="examInfoID" type="hidden" value="">
             <h1 id="examInfoName">skeleton</h1>
             <p id="examInfoDesc">skeleton</p>
             <p id="examInfoQuestions">skeleton</p>
             <p id="examInfoDeadline">skeleton</p>
             <button id="takeExamBtn" onclick="startExam()" class="greenBtn" style="width: 80%; margin-top: 10px;">Take exam</button>
-        </div>
-        <!--<div id="centerDiv">
-            <p id="examQuestion">Q</p>
+        </div> -->
 
-            <button id="answerA" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>A</span></span><span class="right"><span id="answerAval">A</span></span></button>
-            <button id="answerB" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>B</span></span><span class="right"><span id="answerBval">B</span></span></button>
-            <button id="answerC" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>C</span></span><span class="right"><span id="answerCval">C</span></span></button>
-            <button id="answerD" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>D</span></span><span class="right"><span id="answerDval">D</span></span></button>
+        <!-- <div id="centerDiv" style="display: block;">
+            <h1>Settings</h1>
+            <p style="margin-bottom: 41px;"></p>
+            <p style="text-align: center; font-size: 24px; font-weight: bold;">Change password</p>
+            <input type="password" id="oldPassword" name="password" placeholder="Old password">
+            <p style="margin: 0px 0px 15px 0px;"></p>
+            <input type="password" id="newPassword" name="password" placeholder="New password">
+            <p style="margin: 0px 0px 5px 0px;"></p>
+            <input type="password" id="confirmPassword" name="password" placeholder="Confirm password">
+            <p id="error" style="display: none;">The username or password is incorrect.</p>
+            <p style="margin: 0px 0px 25px 0px;"></p>
+            <button onclick="changePassword()" class="greenBtn" style="width: 200px;">Change password</button>
+        </div> -->
 
-            <button id="nextQuestionBtn" onclick="sendAnswer()" class="greenBtn">Next question</button>
-        </div>-->
         <div id="optionsPanel">
             <p id="optionsUsername">Options</p>
-            <a id="resultsBtn" href="javascript:void(0)">Results</a>
-            <a id="settingsBtn" href="javascript:void(0)">Settings</a>
+            <a id="resultsBtn" href="javascript:showResults()">Results</a>
+            <a id="settingsBtn" href="javascript:showSettings()">Settings</a>
             <a id="logOutBtn" href="javascript:logOut()">Log out</a>
         </div>
     </div>
