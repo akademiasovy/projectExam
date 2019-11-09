@@ -1,0 +1,82 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cookie Consent</title>
+  <style>
+     * {
+        font-family: sans-serif;
+     }
+
+     body {
+        background-color: #EAEAEA;
+     }
+
+     .mainDiv {
+	    width: 620px;
+	    height: 124px;
+	    padding: 25px 25px 35px 25px;
+
+	    background-color: white;
+        border-radius: 15px;
+	    box-shadow: 0px 0px 15px 0px;
+
+	    position: fixed;
+	    top:0;
+	    bottom: 0;
+	    left: 0;
+	    right: 0;
+  	
+	    margin: auto;
+
+        text-align: center;
+        vertical-align: middle;
+        line-height: 5px;
+	    font-size: 22;
+     }
+
+     .agreeBtn {
+         background-color: #4DDD78;
+         color: white;
+         width: 200px;
+         height: 50px;
+         text-decoration: none;
+         border: none;
+         border-radius: 24px;
+         box-shadow: 0px 0px 10px 2px;
+         cursor: pointer;
+         font-size: 16;
+         transition: 0.2s;
+         user-select: none;
+     }
+
+     .agreeBtn:hover {
+         background-color: white;
+         color: #4DDD78;
+         text-decoration: none;
+         border-style: solid;
+         border-color: #4DDD78;
+         box-shadow: 0px 0px 10px 2px;
+         transition: 0.2s;
+     }
+
+     .agreeBtn:focus {
+         outline: 0;
+     }
+  </style>
+
+  <script>
+     function agree() {
+        document.cookie = "CookieConsent=Accepted";
+        location.reload();
+     }
+   </script>
+</head>
+
+<body>
+  <div class="mainDiv">
+     <p>This website uses cookies to recognise your browser or device.</p>
+     <br><br><br><br><br>
+     <button onclick="agree()" class="agreeBtn">I Agree</button>
+  </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Exams</title>
+    <link rel="stylesheet" id="theme" type="text/css" href="./resources/main-light.css">
+    <script src="./resources/jquery"></script>
+    <script src="./resources/progressbar.js"></script>
+    <script src="./resources/main.js"></script>
+    <script src="./resources/sortable.min.js"></script>
+</head>
+
+<body>
+    <div id="examList" class="sidenav">
+        <p>Exams</p>
+    </div>
+    <ul id="navbar" class="navbar">
+        <li class="navbar-title"><p>Logged in as $FULLNAME$</p></li>
+        <li class="navbar-item"><button id="optionsPanelBtn" onclick="toggleOptionsPanel()"><img id="optionsIcon" style="width: 50%; padding: 0; margin: 0 auto; top: 0;" src="./resources/options-light.png"></button></li>
+    </ul>
+    
+    <div id="main">
+        <h1 id="mainPlaceholder">Select an exam</h1>
+
+        <div id="centerDiv"></div>
+
+        <!-- <div id="centerDiv" class="skeleton">
+            <input id="examInfoID" type="hidden" value="">
+            <h1 id="examInfoName">skeleton</h1>
+            <p id="examInfoDesc">skeleton</p>
+            <p id="examInfoQuestions">skeleton</p>
+            <p id="examInfoDeadline">skeleton</p>
+            <button id="takeExamBtn" onclick="startExam()" class="greenBtn" style="width: 80%; margin-top: 10px;">Take exam</button>
+        </div> -->
+
+        <!-- <div id="centerDiv" style="display: block;">
+            <h1>Settings</h1>
+            <p style="margin-bottom: 41px;"></p>
+            <p style="text-align: center; font-size: 24px; font-weight: bold;">Change password</p>
+            <input type="password" id="oldPassword" name="password" placeholder="Old password">
+            <p style="margin: 0px 0px 15px 0px;"></p>
+            <input type="password" id="newPassword" name="password" placeholder="New password">
+            <p style="margin: 0px 0px 5px 0px;"></p>
+            <input type="password" id="confirmPassword" name="password" placeholder="Confirm password">
+            <p id="error" style="display: none;">The username or password is incorrect.</p>
+            <p style="margin: 0px 0px 25px 0px;"></p>
+            <button onclick="changePassword()" class="greenBtn" style="width: 200px;">Change password</button>
+        </div> -->
+
+        <div id="optionsPanel">
+            <p id="optionsUsername">Options</p>
+            <a id="resultsBtn" href="javascript:showResults()">Results</a>
+            <a id="settingsBtn" href="javascript:showSettings()">Settings</a>
+            <a id="changeThemeBtn" href="javascript:changeTheme()">Toggle light/dark mode</a>
+            <a id="logOutBtn" href="javascript:logOut()">Log out</a>
+        </div>
+    </div>
+</body>
+
+</html>
