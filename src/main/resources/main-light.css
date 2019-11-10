@@ -8,6 +8,10 @@
             background-color: #EAEAEA;
         }
 
+        h1 {
+            color: rgba(0,0,0,0.87);
+        }
+
         .navbar {
             position: fixed;
             top: 0;
@@ -174,6 +178,7 @@
 
         #centerDiv p {
             text-align: left;
+            color: rgba(0,0,0,0.65);
         }
 
         #centerDiv .greenBtn {
@@ -211,6 +216,8 @@
         }
 
         #centerDiv p#examQuestion {
+            color: rgba(0,0,0,0.87);
+
             text-align: center;
             font-weight: bold;
             font-size: 20px;
@@ -218,6 +225,11 @@
 
             margin-top: 0px;
             margin-bottom: 30px;
+        }
+
+        #centerDiv.skeleton p#examQuestion {
+            background-color: initial;
+            color: rgba(0,0,0,0.87);;
         }
 
         .examAnswer {
@@ -416,4 +428,8 @@
            text-align: center;
            width: 100%;
            color: #AAAAAA;
+        }
+
+        #centerDiv .requirements .fulfilled {
+            color: #4DDD78;
         }

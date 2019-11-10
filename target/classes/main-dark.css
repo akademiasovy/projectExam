@@ -9,7 +9,7 @@
         }
 
         h1 {
-            color: white;
+            color: rgba(255,255,255,0.87);
         }
 
         .navbar {
@@ -178,7 +178,7 @@
 
         #centerDiv p {
             text-align: left;
-            color: white;
+            color: rgba(255,255,255,0.65);
         }
 
         #centerDiv .greenBtn {
@@ -216,6 +216,8 @@
         }
 
         #centerDiv p#examQuestion {
+            color: rgba(255,255,255,0.87);
+
             text-align: center;
             font-weight: bold;
             font-size: 20px;
@@ -223,6 +225,11 @@
 
             margin-top: 0px;
             margin-bottom: 30px;
+        }
+
+        #centerDiv.skeleton p#examQuestion {
+            background-color: initial;
+            color: rgba(255,255,255,0.87);
         }
 
         .examAnswer {
@@ -253,13 +260,13 @@
         }
 
         .examAnswer.selected {
-            background-color: #87B587;
-            border: 1px solid #5BFF84;
+            background-color: #6B9E73;
+            border: 1px solid #46C466;
             transition: 0.2s;
         }
 
         .examAnswer.selected:hover {
-            background-color: #88CE88;
+            background-color: #74AD7D;
             transition: 0.2s;
         }
 
@@ -346,8 +353,8 @@
         }
 
         .greenBtn {
-            background-color: #4DDD78;
-            color: white;
+            background-color: #47B25B;
+            color: rgba(0,0,0,0.8);
             width: 300px;
             height: 50px;
             text-decoration: none;
@@ -362,10 +369,10 @@
 
         .greenBtn:hover {
             background-color: #323232;
-            color: #4DDD78;
+            color: #47B25B;
             text-decoration: none;
             border-style: solid;
-            border-color: #4DDD78;
+            border-color: #47B25B;
             box-shadow: 0px 0px 10px 2px;
             transition: 0.2s;
         }
@@ -399,7 +406,7 @@
 	    input:focus {
             outline: 0;
             width: 290px;
-            border: 2px solid #4DDD78;
+            border: 2px solid #47B25B;
         }
 
         #centerDiv #error {
@@ -425,4 +432,8 @@
            text-align: center;
            width: 100%;
            color: #AAAAAA;
+        }
+
+        #centerDiv .requirements .fulfilled {
+            color: #47B25B;
         }

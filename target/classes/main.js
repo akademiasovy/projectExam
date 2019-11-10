@@ -1,5 +1,9 @@
 var interval;
 
+if (window.localStorage.getItem("theme") == "dark") {
+    $("#theme").attr("href","./resources/main-dark.css");
+}
+
 $.ajax({
         type: "GET",
         url: "./exams/assigned",
@@ -41,8 +45,6 @@ $(document).ready(function() {
     new ResizeObserver(updateUI).observe(document.getElementById("optionsPanel"));
 
     if (window.localStorage.getItem("theme") == "dark") {
-        window.localStorage.setItem("theme", "dark");
-        $("#theme").attr("href","./resources/main-dark.css");
         $("#optionsIcon").attr("src","./resources/options-dark.png");
     }
 });
@@ -203,27 +205,27 @@ function changePassword() {
 function checkPassword() {
     var password = $("#newPassword").val();
     if (password.length < 8) {
-        $("#reqLength").css("color","");
+        $("#reqLength").removeClass("fulfilled");
     } else {
-        $("#reqLength").css("color","#4DDD78");
+        $("#reqLength").addClass("fulfilled");
     }
 
     if (!password.match(/[a-z]/g)) {
-        $("#reqLower").css("color","");
+        $("#reqLower").removeClass("fulfilled");
     } else {
-        $("#reqLower").css("color","#4DDD78");
+        $("#reqLower").addClass("fulfilled");
     }
 
     if (!password.match(/[A-Z]/g)) {
-        $("#reqUpper").css("color","");
+        $("#reqUpper").removeClass("fulfilled");
     } else {
-        $("#reqUpper").css("color","#4DDD78");
+        $("#reqUpper").addClass("fulfilled");
     }
 
     if (!password.match(/[0-9]/g)) {
-        $("#reqDigit").css("color","");
+        $("#reqDigit").removeClass("fulfilled");
     } else {
-        $("#reqDigit").css("color","#4DDD78");
+        $("#reqDigit").addClass("fulfilled");
     }
 
     checkPasswordMatch();
@@ -234,9 +236,9 @@ function checkPasswordMatch() {
     var confirmPassword = $("#confirmPassword").val();
 
     if (newPassword != confirmPassword || newPassword == "" || confirmPassword == "") {
-        $("#reqMatch").css("color","");
+        $("#reqMatch").removeClass("fulfilled");
     } else {
-        $("#reqMatch").css("color","#4DDD78");
+        $("#reqMatch").addClass("fulfilled");
     }
 }
 
@@ -342,6 +344,9 @@ function sendAnswer() {
                                 $("#resultIncorrect").html("<b>Incorrect answers: </b><b style='color: #FF3333;'>"+(parseInt(json.questions)-parseInt(json.correct))+"</b>");
                                 $("#resultQuestions").html("<b>Total questions: "+parseInt(json.questions)+"</b>");
 
+                                $("#examQuestionNum").text("Summary");
+                                $("#examQuestionNum").hide().fadeIn(150);
+
                                 $("#centerDiv").removeClass("skeleton");
                             },
                             error: function() {
@@ -370,13 +375,15 @@ function startExam() {
         success: function(result) {
             var json = JSON.parse(result);
             $("#examList").html("<p id='examQuestionNum'>Question 1/"+json.questions+"</p><span>"+json.name+"</span><span id='examTime' name='"+json.start+"'>00:00:00</span>");
+            $("#examQuestionNum").hide().fadeIn(150);
+
             interval = setInterval(updateTimer, 1000);
 
             $("#resultsBtn").css("display","none");
             $("#settingsBtn").css("display","none");
 
             $('#centerDiv').addClass("skeleton");
-            $('#centerDiv').html('<p id="examQuestion">Q</p> <button id="answerA" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>A</span></span><span class="right"><span id="answerAval">A</span></span></button> <button id="answerB" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>B</span></span><span class="right"><span id="answerBval">B</span></span></button> <button id="answerC" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>C</span></span><span class="right"><span id="answerCval">C</span></span></button> <button id="answerD" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>D</span></span><span class="right"><span id="answerDval">D</span></span></button> <button id="nextQuestionBtn" onclick="sendAnswer()" class="greenBtn">Next question</button>');
+            $('#centerDiv').html('<p id="examQuestion"></p> <button id="answerA" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>A</span></span><span class="right"><span id="answerAval">A</span></span></button> <button id="answerB" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>B</span></span><span class="right"><span id="answerBval">B</span></span></button> <button id="answerC" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>C</span></span><span class="right"><span id="answerCval">C</span></span></button> <button id="answerD" onclick="selectAnswer(this)" class="examAnswer"><span class="left"><span>D</span></span><span class="right"><span id="answerDval">D</span></span></button> <button id="nextQuestionBtn" onclick="sendAnswer()" class="greenBtn">Next question</button>');
             getCurrentQuestion();
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -400,7 +407,10 @@ function getCurrentQuestion() {
         headers: {"Authorization":window.localStorage.getItem("token")},
         success: function(result) {
             var json = JSON.parse(result);
+            $("#examQuestion").hide();
             $("#examQuestion").text(json.question);
+            $("#examQuestion").fadeIn(150);
+
             $("#answerAval").text(json.optionA);
             $("#answerBval").text(json.optionB);
             $("#answerCval").text(json.optionC);
@@ -408,6 +418,7 @@ function getCurrentQuestion() {
 
             var examQuestionNum = $("#examQuestionNum");
             examQuestionNum.text("Question "+(json.number+1)+examQuestionNum.text().substring(examQuestionNum.text().lastIndexOf("/")));
+           if (json.number > 0) examQuestionNum.hide().fadeIn(150);
 
             var questions = parseInt($(examQuestionNum).text().substring(examQuestionNum.text().lastIndexOf("/")+1));
             if (parseInt(json.number)+1==questions) $("#nextQuestionBtn").text("Finish exam");
