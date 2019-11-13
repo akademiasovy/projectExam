@@ -38,10 +38,4 @@ public class Utils {
         return exchange.getRequestHeaders().getFirst("Authorization");
     }
 
-    public static String parseTheme(HttpExchange exchange) {
-        String theme = exchange.getRequestHeaders().getFirst("theme");
-        if (theme == null) return "light";
-        else return theme;
-    }
-
 }
