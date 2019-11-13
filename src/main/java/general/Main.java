@@ -33,7 +33,7 @@ public class Main {
         fileManager.addFile("main-light.css","main-light.css");
         fileManager.addFile("main-dark.css","main-dark.css");
         fileManager.addFile("main.js","main.js");
-        fileManager.addFile("progressbar.js","progressbar.js");
+        fileManager.addFile("progressbar.min.js","progressbar.min.js");
         fileManager.addFile("sortable.min.js","sortable.min.js");
         fileManager.addFile("sortable-light.css","sortable-theme-light.css");
         fileManager.addFile("sortable-dark.css","sortable-theme-dark.css");
