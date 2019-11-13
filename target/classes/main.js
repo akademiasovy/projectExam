@@ -4,6 +4,10 @@ if (window.localStorage.getItem("theme") == "dark") {
     $("#theme").attr("href","./resources/main-dark.css");
 }
 
+$(window).on("load", function(){
+    $("body").css("opacity",1);
+});
+
 $.ajax({
         type: "GET",
         url: "./exams/assigned",
@@ -263,7 +267,6 @@ function deselectAnswer() {
 function updateTimer() {
     var timer = $("#examTime");
     if (timer == null || timer == undefined) return;
-    //TODO: Remove results and setting from optionsPanel
     var duration = Date.now()-Number(timer.attr('name'));
     var hours = Math.floor(duration/3600000);
     var minutes = Math.floor((duration-hours*3600000)/60000);
