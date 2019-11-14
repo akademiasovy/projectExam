@@ -27,7 +27,7 @@ public class Main {
         server.createContext("/password",new PasswordAPI());
 
         FileManager fileManager = server.getFileManager();
-        fileManager.addFile("jquery","jquery3.4.1.min.js");
+        fileManager.addFile("jquery.js","jquery3.4.1.min.js");
         fileManager.addFile("options-light.png","options-light.png");
         fileManager.addFile("options-dark.png","options-dark.png");
         fileManager.addFile("main-light.css","main-light.css");

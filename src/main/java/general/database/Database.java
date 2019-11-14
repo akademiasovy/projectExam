@@ -10,7 +10,11 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
+import org.hibernate.criterion.Restrictions;
 
+import javax.persistence.Query;
+import javax.persistence.criteria.*;
+import java.beans.Expression;
 import java.util.*;
 
 public class Database {
@@ -82,8 +86,15 @@ public class Database {
 
         try {
             tx = session.beginTransaction();
-            List<Student> studentList = session.createQuery("FROM Student WHERE id="+id).list();
 
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Student> query = cb.createQuery(Student.class);
+            Root<Student> root = query.from(Student.class);
+
+            Predicate predicate = cb.equal(root.get("id"),id);
+            query.select(root).where(predicate);
+
+            List<Student> studentList = session.createQuery(query).list();
             if (studentList.size() >= 1) return studentList.get(0);
 
             tx.commit();
@@ -102,10 +113,17 @@ public class Database {
 
         try {
             tx = session.beginTransaction();
-            List<Credentials> credentialsList = session.createQuery("FROM Credentials").list();
-            for (Credentials credentials : credentialsList) {
-                if (credentials.getLogin().equals(username)) return credentials;
-            }
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Credentials> query = cb.createQuery(Credentials.class);
+            Root<Credentials> root = query.from(Credentials.class);
+
+            Predicate predicate = cb.equal(root.get("login"),username);
+            query.select(root).where(predicate);
+
+            List<Credentials> credentialsList = session.createQuery(query).list();
+            if (credentialsList.size() >= 1) return credentialsList.get(0);
+
             tx.commit();
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();
@@ -136,6 +154,7 @@ public class Database {
         Set<Exam> examSet = new HashSet<Exam>();
         Date date = new Date();
 
+        //TODO: Maybe use inner join
         for (Group group : student.getGroupSet()) {
             for (Exam exam : new HashSet<Exam>(group.getExamSet())) {
                 if (includeInactive || (exam.getStart().getTime() <= date.getTime() && exam.getEnd().getTime() >= date.getTime())) {
@@ -164,8 +183,15 @@ public class Database {
 
         try {
             tx = session.beginTransaction();
-            List<Exam> examList = session.createQuery("FROM Exam WHERE id="+id).list();
 
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Exam> query = cb.createQuery(Exam.class);
+            Root<Exam> root = query.from(Exam.class);
+
+            Predicate predicate = cb.equal(root.get("id"),id);
+            query.select(root).where(predicate);
+
+            List<Exam> examList = session.createQuery(query).list();
             if (examList.size() >= 1) return examList.get(0);
 
             tx.commit();

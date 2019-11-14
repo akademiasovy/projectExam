@@ -2,6 +2,8 @@ var interval;
 
 if (window.localStorage.getItem("theme") == "dark") {
     $("#theme").attr("href","./resources/main-dark.css");
+} else {
+    $("#theme").attr("href","./resources/main-light.css");
 }
 
 $(window).on("load", function(){

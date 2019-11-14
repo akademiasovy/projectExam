@@ -10,6 +10,7 @@ import java.awt.image.DataBufferByte;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 
 public class Index implements HttpHandler {
@@ -52,6 +53,7 @@ public class Index implements HttpHandler {
         String data = new String(Utils.readResource("main.html"));
         data = data.replaceAll("\\$FULLNAME\\$",student.getFirstname()+" "+student.getLastname());
         byte[] bytes = data.getBytes();
+        exchange.getResponseHeaders().put("Cache-Control",Arrays.asList("no-cache"));
         exchange.sendResponseHeaders(200, bytes.length);
         exchange.getResponseBody().write(bytes);
         exchange.getResponseBody().flush();
@@ -59,8 +61,10 @@ public class Index implements HttpHandler {
         exchange.close();
     }
 
+    //TODO: Add captcha
     public void handleLogin(HttpExchange exchange) throws IOException {
         byte[] data = Utils.readResource("login.html");
+        exchange.getResponseHeaders().put("Cache-Control",Arrays.asList("no-cache"));
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();
@@ -70,6 +74,7 @@ public class Index implements HttpHandler {
 
     public void handleCookieConsent(HttpExchange exchange) throws IOException {
         byte[] data = Utils.readResource("consent.html");
+        exchange.getResponseHeaders().put("Cache-Control",Arrays.asList("no-cache"));
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();

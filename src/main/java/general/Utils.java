@@ -34,6 +34,7 @@ public class Utils {
         return builder.toString();
     }
 
+    //TODO: Store token in secure httpOnly cookie
     public static String parseToken(HttpExchange exchange) {
         return exchange.getRequestHeaders().getFirst("Authorization");
     }

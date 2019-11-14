@@ -29,6 +29,9 @@ public class FileManager implements HttpHandler {
 
             if (resName.endsWith(".css")) {
                 exchange.getResponseHeaders().put("Content-Type", Arrays.asList("text/css"));
+
+                //TODO: Use ETags or Last-Modified, maybe delete
+                exchange.getResponseHeaders().put("Cache-Control",Arrays.asList("max-age=86400"));
             } else if (resName.endsWith(".js")) {
                 exchange.getResponseHeaders().put("Content-Type", Arrays.asList("text/javascript"));
             }

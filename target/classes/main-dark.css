@@ -354,7 +354,7 @@
 
         .greenBtn {
             background-color: #47B25B;
-            color: rgba(0,0,0,0.8);
+            color: /*rgba(0,0,0,0.8);*/rgba(255,255,255,0.8);
             width: 300px;
             height: 50px;
             text-decoration: none;
