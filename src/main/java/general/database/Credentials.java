@@ -9,12 +9,13 @@ import javax.persistence.*;
 public class Credentials {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @OneToOne(mappedBy = "credentials", fetch = FetchType.EAGER)
-    private Student student;
+    private User user;
 
+    private String email;
     private String login;
 
     private String password;
@@ -25,8 +26,9 @@ public class Credentials {
 
     }
 
-    public Credentials(String login, String password, String salt, int iterations) {
+    public Credentials(String login, String email, String password, String salt, int iterations) {
         this.login = login;
+        this.email = email;
         this.password = password;
         this.salt = salt;
         this.iterations = iterations;
@@ -45,12 +47,12 @@ public class Credentials {
         this.id = id;
     }
 
-    public Student getStudent() {
-        return student;
+    public User getUser() {
+        return user;
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getLogin() {
@@ -59,6 +61,14 @@ public class Credentials {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

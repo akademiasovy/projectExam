@@ -3,10 +3,7 @@ package general.net;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import general.Utils;
-import general.database.Database;
-import general.database.Exam;
-import general.database.Result;
-import general.database.Student;
+import general.database.*;
 import general.exams.ExamManager;
 import general.exams.QAPair;
 import general.exams.StartedExam;
@@ -96,7 +93,16 @@ public class ExamAPI implements HttpHandler {
             exchange.close();
             return;
         }
-        List<Exam> exams = Database.getInstance().getExams(Database.getInstance().getCredentials(username).getStudent(), false, false);
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
+
+        List<Exam> exams = Database.getInstance().getExams(student, false, false);
 
         JSONObject root = new JSONObject();
 
@@ -128,7 +134,15 @@ public class ExamAPI implements HttpHandler {
         }
         Exam exam = null;
 
-        List<Exam> exams = Database.getInstance().getExams(Database.getInstance().getCredentials(username).getStudent(), true, true);
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
+
+        List<Exam> exams = Database.getInstance().getExams(student, true, true);
         for (Exam exam1 : exams) {
             if (exam1.getId() == examID) {
                 exam = exam1;
@@ -163,7 +177,15 @@ public class ExamAPI implements HttpHandler {
             exchange.close();
             return;
         }
-        Student student = Database.getInstance().getCredentials(username).getStudent();
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
+
         Exam exam = null;
 
         int examID;
@@ -183,7 +205,8 @@ public class ExamAPI implements HttpHandler {
         }
 
 
-        List<Exam> exams = Database.getInstance().getExams(Database.getInstance().getCredentials(username).getStudent(), false, false);
+
+        List<Exam> exams = Database.getInstance().getExams(student, false, false);
         for (Exam exam1 : exams) {
             if (exam1.getId() == examID) {
                 exam = exam1;
@@ -231,7 +254,14 @@ public class ExamAPI implements HttpHandler {
             exchange.close();
             return;
         }
-        Student student = Database.getInstance().getCredentials(username).getStudent();
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
         StartedExam exam = ExamManager.getInstance().getExam(student.getId());
 
         if (exam == null) {
@@ -261,7 +291,14 @@ public class ExamAPI implements HttpHandler {
             exchange.close();
             return;
         }
-        Student student = Database.getInstance().getCredentials(username).getStudent();
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
         StartedExam exam = ExamManager.getInstance().getExam(student.getId());
 
         if (exam == null) {
@@ -301,7 +338,14 @@ public class ExamAPI implements HttpHandler {
             exchange.close();
             return;
         }
-        Student student = Database.getInstance().getCredentials(username).getStudent();
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
         StartedExam exam = ExamManager.getInstance().getExam(student.getId());
 
         if (exam == null) {
@@ -347,7 +391,16 @@ public class ExamAPI implements HttpHandler {
             exchange.close();
             return;
         }
-        List<Result> results = new ArrayList<Result>(Database.getInstance().getCredentials(username).getStudent().getResultSet());
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
+
+        List<Result> results = new ArrayList<Result>(student.getResultSet());
         Collections.sort(results, new Comparator<Result>() {
             @Override
             public int compare(Result o1, Result o2) {
@@ -389,7 +442,16 @@ public class ExamAPI implements HttpHandler {
             exchange.close();
             return;
         }
-        Set<Result> results = Database.getInstance().getCredentials(username).getStudent().getResultSet();
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
+
+        Set<Result> results = student.getResultSet();
 
         for (Result result : results) {
             if (result.getExam().getId() == examID) {

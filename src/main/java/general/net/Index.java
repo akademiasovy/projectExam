@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import general.Utils;
 import general.database.Database;
 import general.database.Student;
+import general.database.User;
 
 import java.awt.image.DataBufferByte;
 import java.io.BufferedReader;
@@ -48,7 +49,13 @@ public class Index implements HttpHandler {
             return;
         }
 
-        Student student = Database.getInstance().getCredentials(TokenHandler.getInstance().getUsername(token)).getStudent();
+        User user = Database.getInstance().getCredentials(TokenHandler.getInstance().getUsername(token)).getUser();
+        if (!(user instanceof Student)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+        Student student = (Student)user;
 
         String data = new String(Utils.readResource("main.html"));
         data = data.replaceAll("\\$FULLNAME\\$",student.getFirstname()+" "+student.getLastname());

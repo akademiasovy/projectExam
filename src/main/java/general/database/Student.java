@@ -5,17 +5,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "student", uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
-public class Student {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private String firstname;
-    private String lastname;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idcredentials", referencedColumnName = "id")
-    private Credentials credentials;
+public class Student extends User {
 
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "studenttogroup",
@@ -29,44 +19,6 @@ public class Student {
 
     public Student() {
 
-    }
-
-    public Student(int id, String firstname, String lastname) {
-        this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public Credentials getCredentials() {
-        return credentials;
-    }
-
-    public void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
     }
 
     public Set<Group> getGroupSet() {

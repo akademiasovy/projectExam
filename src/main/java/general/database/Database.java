@@ -48,7 +48,9 @@ public class Database {
             MetadataSources sources = new MetadataSources(this.registry);
 
             sources.addAnnotatedClass(Credentials.class);
+            sources.addAnnotatedClass(User.class);
             sources.addAnnotatedClass(Student.class);
+            sources.addAnnotatedClass(Teacher.class);
             sources.addAnnotatedClass(Group.class);
             sources.addAnnotatedClass(Exam.class);
             sources.addAnnotatedClass(Question.class);

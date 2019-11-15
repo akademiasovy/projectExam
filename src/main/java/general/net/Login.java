@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import general.database.Database;
 import general.database.Student;
+import general.database.User;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -40,8 +41,8 @@ public class Login implements HttpHandler {
         String password = String.valueOf(reqJSON.get("password"));
 
         if (TokenHandler.getInstance().authenticate(username,password)) {
-            Student student = Database.getInstance().getCredentials(username).getStudent();
-            if (student == null) {
+            User user = Database.getInstance().getCredentials(username).getUser();
+            if (user == null) {
                 exchange.sendResponseHeaders(401,0);
                 exchange.close();
                 return;
@@ -49,8 +50,6 @@ public class Login implements HttpHandler {
 
             JSONObject resJSON = new JSONObject();
             resJSON.put("token",TokenHandler.getInstance().getToken(username));
-            resJSON.put("firstname",student.getFirstname());
-            resJSON.put("lastname",student.getLastname());
             byte[] data = resJSON.toJSONString().getBytes();
             exchange.sendResponseHeaders(200,data.length);
             exchange.getResponseBody().write(data);
