@@ -6,23 +6,32 @@ import general.net.server.*;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+        /*TODO:
+        *
+        * General:
+        *   Add forgot password functionality
+        * Security:
+        *   Store tokens in httpOnly secure cookies ------> add './auth/logout' to AuthAPI
+        *   Better tokens (stronger, better, length and other settings in config)
+        * Teacher:
+        *   View started exams (ability to terminate)
+        *   Manage and add/remove students (assign groups)
+        *   Manage and add/remove groups
+        *   Manage and add/remove teachers (can't remove self)
+        *   Manage and add/remove exams (add or change questions, assign groups, etc.)
+        *   View results (per student/per exam)
+        *
+        * */
+
         //TODO: Delete
         Database.getInstance().deleteResults();
-        //System.out.println(PBKDF2WithHmacSHA256.hexHash("password","salt",4096,32));
-
-        /*Student student = Database.getInstance().getStudentByUsername("rm");
-        List<Group> groups = Database.getInstance().getGroupsByStudent(student);
-        List<Exam> exams = Database.getInstance().getExamsByGroups(groups, true);
-        for (Exam exam : exams) {
-            System.out.println(exam.getName());
-        }*/
 
         Config.getInstance();
 
         Server server = new HTTPServer();
         server.createContext("/",new Index());
-        server.createContext("/login",new Login());
+        server.createContext("/auth",new AuthAPI());
         server.createContext("/exams",new ExamAPI());
         server.createContext("/password",new PasswordAPI());
 

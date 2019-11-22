@@ -2,7 +2,10 @@ package general.database;
 
 import javax.persistence.*;
 
-@MappedSuperclass
+@Entity
+@Table(name = "user", uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
+@Inheritance
+@DiscriminatorColumn(name="type")
 public class User {
 
     @Id
@@ -18,14 +21,6 @@ public class User {
 
     public User() {
 
-    }
-
-    public Credentials getCredentials() {
-        return credentials;
-    }
-
-    public void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
     }
 
     public int getId() {
@@ -50,5 +45,13 @@ public class User {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 }

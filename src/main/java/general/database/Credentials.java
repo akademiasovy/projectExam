@@ -3,6 +3,7 @@ package general.database;
 import general.PBKDF2WithHmacSHA256;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "credentials", uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
@@ -26,9 +27,9 @@ public class Credentials {
 
     }
 
-    public Credentials(String login, String email, String password, String salt, int iterations) {
-        this.login = login;
+    public Credentials(String email, String login, String password, String salt, int iterations) {
         this.email = email;
+        this.login = login;
         this.password = password;
         this.salt = salt;
         this.iterations = iterations;
@@ -55,20 +56,20 @@ public class Credentials {
         this.user = user;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPassword() {

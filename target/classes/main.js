@@ -13,6 +13,7 @@ $(window).on("load", function(){
 $.ajax({
         type: "GET",
         url: "./exams/assigned",
+        dataType: "json",
         headers: {"Authorization":window.localStorage.getItem("token")},
         success: function(result) {
             var json = JSON.parse(result);
@@ -47,8 +48,12 @@ $(document).ready(function() {
         }
     });
 
-    new ResizeObserver(updateUI).observe(document.getElementById("centerDiv"));
-    new ResizeObserver(updateUI).observe(document.getElementById("optionsPanel"));
+    try {
+        new ResizeObserver(updateUI).observe(document.getElementById("centerDiv"));
+        new ResizeObserver(updateUI).observe(document.getElementById("optionsPanel"));
+    } catch (err) {
+        console.error(err.message);
+    }
 
     if (window.localStorage.getItem("theme") == "dark") {
         $("#optionsIcon").attr("src","./resources/options-dark.png");
@@ -105,13 +110,14 @@ function showSettings() {
 
 function showResults() {
     $('#centerDiv').addClass("skeleton");
-    $('#centerDiv').html("<h1>Results</h1><div style='max-height: 400px; overflow: auto;'><table id='resultsTable' style='width: 100%;' class='sortable-theme-light sortable-theme-dark' data-sortable><thead><th>#</th><th>Exam</th><th>Score</th></thead><tbody id='resultsTBody'></tbody></table></div>");
+    $('#centerDiv').html("<h1>Results</h1><div style='max-height: 300px; overflow: auto;'><table id='resultsTable' class='sortable-theme-light sortable-theme-dark' data-sortable><thead><th>#</th><th>Exam</th><th>Score</th></thead><tbody id='resultsTBody'></tbody></table></div>");
     $('#centerDiv').css('display','inline');
     $('#mainPlaceholder').css('display','none');
 
     $.ajax({
             type: "GET",
             url: "./exams/results",
+            dataType: "json",
             headers: {"Authorization":window.localStorage.getItem("token")},
             success: function(result) {
                 var json = JSON.parse(result);
@@ -313,6 +319,7 @@ function sendAnswer() {
                         $.ajax({
                             type: "GET",
                             url: jqXHR.responseText,
+                            dataType: "json",
                             headers: {"Authorization":window.localStorage.getItem("token")},
                             success: function(result, textStatus, jqXHR) {
                                 if (jqXHR.status != 200) window.location.href = window.location.href;
@@ -361,8 +368,9 @@ function sendAnswer() {
                         });
                     }
                 },
-                error: function() {
-                    document.getElementById("takeExamBtn").disabled = false;
+                error: function(jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 401) window.location.href = window.location.href;
+                    else document.getElementById("nextQuestionBtn").disabled = false;
                 },
                 dataType: "text"
         });
@@ -375,6 +383,7 @@ function startExam() {
     $.ajax({
         type: "POST",
         url: "./exams/start",
+        dataType: "json",
         headers: {"Authorization":window.localStorage.getItem("token")},
         data: JSON.stringify({id: $("#examInfoID").val()}),
         success: function(result) {
@@ -392,8 +401,7 @@ function startExam() {
             getCurrentQuestion();
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.status == 409) {
-                //clearInterval(interval);
+            if (jqXHR.status == 409 || jqXHR.status == 401) {
                 window.location.href = window.location.href;
             } else {
                 document.getElementById("takeExamBtn").disabled = false;
@@ -409,6 +417,7 @@ function getCurrentQuestion() {
     $.ajax({
         type: "GET",
         url: "./exams/assigned/question",
+        dataType: "json",
         headers: {"Authorization":window.localStorage.getItem("token")},
         success: function(result) {
             var json = JSON.parse(result);
@@ -445,6 +454,7 @@ function refreshExamList() {
     $.ajax({
         type: "GET",
         url: "./exams",
+        dataType: "json",
         headers: {"Authorization":window.localStorage.getItem("token")},
         success: function(result) {
             var examList = document.getElementById("examList");
@@ -496,6 +506,7 @@ function selectExam(id) {
     selectQuery = $.ajax({
         type: "GET",
         url: "./exams/"+id,
+        dataType: "json",
         headers: {"Authorization":window.localStorage.getItem("token")},
         success: function(result) {
             console.log(result);
@@ -508,9 +519,13 @@ function selectExam(id) {
             $('#examInfoDeadline').html("<b>Deadline:</b> "+new Date(exam.end).toDateString());
             $('#centerDiv').removeClass("skeleton");
         },
-        error: function() {
-            $('#centerDiv').css('display','none');
-            $('#mainPlaceholder').css('display','table-cell');
+        error: function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 401) {
+                window.location.href = window.location.href;
+            } else {
+                $('#centerDiv').css('display','none');
+                $('#mainPlaceholder').css('display','table-cell');
+            }
         },
         dataType: "text"
     });

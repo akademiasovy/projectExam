@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "student", uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
+@DiscriminatorValue("student")
 public class Student extends User {
 
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
@@ -36,4 +36,5 @@ public class Student extends User {
     public void setResultSet(Set<Result> resultSet) {
         this.resultSet = resultSet;
     }
+
 }

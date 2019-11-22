@@ -82,7 +82,7 @@ public class ExamAPI implements HttpHandler {
             return;
         }
 
-        exchange.sendResponseHeaders(400,0);
+        exchange.sendResponseHeaders(404,0);
         exchange.close();
     }
 
@@ -118,6 +118,7 @@ public class ExamAPI implements HttpHandler {
         root.put("exams",examArray);
 
         byte[] data = root.toJSONString().getBytes();
+        exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();
@@ -163,6 +164,7 @@ public class ExamAPI implements HttpHandler {
         examObject.put("end",exam.getEnd().getTime());
 
         byte[] data = examObject.toJSONString().getBytes();
+        exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();
@@ -238,7 +240,7 @@ public class ExamAPI implements HttpHandler {
             examObject.put("questions", startedExam.getExam().getQuestions());
             examObject.put("start", startedExam.getStartTime().getTime());
             byte[] data = examObject.toJSONString().getBytes();
-
+            exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
             exchange.sendResponseHeaders(201, data.length);
             exchange.getResponseBody().write(data);
             exchange.getResponseBody().flush();
@@ -274,13 +276,12 @@ public class ExamAPI implements HttpHandler {
             examObject.put("questions",exam.getExam().getQuestions());
             examObject.put("start",exam.getStartTime().getTime());
             byte[] data = examObject.toJSONString().getBytes();
+            exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
             exchange.sendResponseHeaders(200, data.length);
             exchange.getResponseBody().write(data);
             exchange.getResponseBody().flush();
             exchange.getResponseBody().close();
             exchange.close();
-
-            System.out.println(ExamManager.getInstance().getExam(student.getId()).getExam().getName());
         }
     }
 
@@ -322,6 +323,7 @@ public class ExamAPI implements HttpHandler {
                 questionObject.put("optionC", exam.getCurrentQuestion().getAnswer(2).getName());
                 questionObject.put("optionD", exam.getCurrentQuestion().getAnswer(3).getName());
                 byte[] data = questionObject.toJSONString().getBytes();
+                exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
                 exchange.sendResponseHeaders(200, data.length);
                 exchange.getResponseBody().write(data);
                 exchange.getResponseBody().flush();
@@ -428,6 +430,7 @@ public class ExamAPI implements HttpHandler {
         }
 
         byte[] data = root.toJSONString().getBytes();
+        exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
         exchange.sendResponseHeaders(200, data.length);
         exchange.getResponseBody().write(data);
         exchange.getResponseBody().flush();
@@ -462,6 +465,7 @@ public class ExamAPI implements HttpHandler {
                 resultObject.put("questions",result.getExam().getQuestions());
 
                 byte[] data = resultObject.toJSONString().getBytes();
+                exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
                 exchange.sendResponseHeaders(200, data.length);
                 exchange.getResponseBody().write(data);
                 exchange.getResponseBody().flush();
