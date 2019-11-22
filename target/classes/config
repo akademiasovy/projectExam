@@ -1,13 +1,14 @@
 {
     "port": "81",
 
-    "databaseURL": "jdbc:mysql://192.168.0.110:3306/exams",
+    "databaseURL": "jdbc:mysql://localhost:3306/exams",
     "databaseUser": "root",
     "databasePass": "",
     "databaseDialect": "org.hibernate.dialect.MySQL5Dialect",
 
     "hibernate": {
-        "hibernate.id.new_generator_mappings": "false"
+        "hibernate.id.new_generator_mappings": "false",
+        "hibernate.jdbc.time_zone": "UTC+1"
     }
 
     "PBKDF2" {

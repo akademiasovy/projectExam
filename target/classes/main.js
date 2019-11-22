@@ -110,7 +110,7 @@ function showSettings() {
 
 function showResults() {
     $('#centerDiv').addClass("skeleton");
-    $('#centerDiv').html("<h1>Results</h1><div style='max-height: 300px; overflow: auto;'><table id='resultsTable' class='sortable-theme-light sortable-theme-dark' data-sortable><thead><th>#</th><th>Exam</th><th>Score</th></thead><tbody id='resultsTBody'></tbody></table></div>");
+    $('#centerDiv').html("<h1>Results</h1><div style='max-height: 300px; overflow: auto;'><table id='resultsTable' class='sortable-theme-light sortable-theme-dark' data-sortable><thead><th>#</th><th>Exam</th><th>Date</th><th>Score</th></thead><tbody id='resultsTBody'></tbody></table></div>");
     $('#centerDiv').css('display','inline');
     $('#mainPlaceholder').css('display','none');
 
@@ -127,9 +127,11 @@ function showResults() {
 
                 for (var i = 0; i < results.length; i++) {
                     var number = results[i].number;
+                    var dateObj = new Date(results[i].date);
+                    var date = dateObj.getDate()+". "+(dateObj.getMonth()+1)+". "+dateObj.getFullYear();
                     var exam = results[i].name;
                     var score = (Math.floor(parseFloat(results[i].correct)/parseFloat(results[i].questions)*100))+"%";
-                    tbody.append("<tr><td>"+number+"</td><td>"+exam+"</td><td>"+score+"</td></tr>");
+                    tbody.append("<tr><td>"+number+"</td><td>"+date+"</td><td>"+exam+"</td><td>"+score+"</td></tr>");
                 }
 
                 Sortable.init();

@@ -1,6 +1,7 @@
 package general.database;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "result", uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
@@ -17,6 +18,10 @@ public class Result {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="idexam", nullable=false)
     private Exam exam;
+
+    @Column(name = "date", columnDefinition="DATETIME", insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
 
     private int correct;
     private int questions;
@@ -54,6 +59,14 @@ public class Result {
 
     public void setExam(Exam exam) {
         this.exam = exam;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public int getCorrect() {

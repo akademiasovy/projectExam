@@ -13,6 +13,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.criterion.Restrictions;
 
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.beans.Expression;
 import java.util.*;
@@ -73,6 +74,22 @@ public class Database {
         try {
             tx = session.beginTransaction();
             session.createQuery("DELETE FROM Result").executeUpdate();
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
+    public void refresh(Object object) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+            session.refresh(object);
             tx.commit();
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();
@@ -203,6 +220,32 @@ public class Database {
         } finally {
             session.close();
         }
+        return null;
+    }
+
+    public List<Result> getResults() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Result> query = cb.createQuery(Result.class);
+            Root<Result> root = query.from(Result.class);
+            CriteriaQuery<Result> all = query.select(root);
+
+            TypedQuery<Result> typedQuery = session.createQuery(all);
+            tx.commit();
+
+            return typedQuery.getResultList();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+
         return null;
     }
 

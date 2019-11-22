@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -395,47 +396,74 @@ public class ExamAPI implements HttpHandler {
         }
 
         User user = Database.getInstance().getCredentials(username).getUser();
-        if (!(user instanceof Student)) {
+        if (user instanceof Student) {
+            Student student = (Student) user;
+
+            List<Result> results = new ArrayList<Result>(student.getResultSet());
+            Collections.sort(results, new Comparator<Result>() {
+                @Override
+                public int compare(Result o1, Result o2) {
+                    if (o1.getId() > o2.getId()) {
+                        return -1;
+                    } else if (o1.getId() < o2.getId()) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+
+            JSONObject root = new JSONObject();
+            JSONArray resultArray = new JSONArray();
+            root.put("results", resultArray);
+
+            for (int i = 0; i < results.size(); i++) {
+                JSONObject resultObject = new JSONObject();
+                resultObject.put("number", results.size() - i);
+                resultObject.put("name", results.get(i).getExam().getName());
+                resultObject.put("date", results.get(i).getDate().getTime());
+                resultObject.put("correct", results.get(i).getCorrect());
+                resultObject.put("questions", results.get(i).getExam().getQuestions());
+                resultArray.add(resultObject);
+            }
+
+            byte[] data = root.toJSONString().getBytes();
+            exchange.getResponseHeaders().put("Content-Type", Arrays.asList("application/json"));
+            exchange.sendResponseHeaders(200, data.length);
+            exchange.getResponseBody().write(data);
+            exchange.getResponseBody().flush();
+            exchange.getResponseBody().close();
+            exchange.close();
+        } else if (user instanceof Teacher) {
+            List<Result> results = Database.getInstance().getResults();
+
+            JSONObject root = new JSONObject();
+            JSONArray resultArray = new JSONArray();
+            root.put("results", resultArray);
+
+            for (int i = 0; i < results.size(); i++) {
+                JSONObject resultObject = new JSONObject();
+                resultObject.put("id", results.get(i).getId());
+                resultObject.put("student", results.get(i).getStudent().getFirstname()+" "+results.get(i).getStudent().getLastname());
+                resultObject.put("name", results.get(i).getExam().getName());
+                resultObject.put("date", results.get(i).getDate().getTime());
+                resultObject.put("correct", results.get(i).getCorrect());
+                resultObject.put("questions", results.get(i).getExam().getQuestions());
+                resultArray.add(resultObject);
+            }
+
+            byte[] data = root.toJSONString().getBytes();
+            exchange.getResponseHeaders().put("Content-Type", Arrays.asList("application/json"));
+            exchange.sendResponseHeaders(200, data.length);
+            exchange.getResponseBody().write(data);
+            exchange.getResponseBody().flush();
+            exchange.getResponseBody().close();
+            exchange.close();
+        } else {
             exchange.sendResponseHeaders(403,0);
             exchange.close();
             return;
         }
-        Student student = (Student)user;
-
-        List<Result> results = new ArrayList<Result>(student.getResultSet());
-        Collections.sort(results, new Comparator<Result>() {
-            @Override
-            public int compare(Result o1, Result o2) {
-                if (o1.getId() > o2.getId()) {
-                    return -1;
-                } else if (o1.getId() < o2.getId()) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
-
-        JSONObject root = new JSONObject();
-        JSONArray resultArray = new JSONArray();
-        root.put("results",resultArray);
-
-        for (int i = 0; i < results.size(); i++) {
-            JSONObject resultObject = new JSONObject();
-            resultObject.put("number",results.size()-i);
-            resultObject.put("name",results.get(i).getExam().getName());
-            resultObject.put("correct",results.get(i).getCorrect());
-            resultObject.put("questions",results.get(i).getExam().getQuestions());
-            resultArray.add(resultObject);
-        }
-
-        byte[] data = root.toJSONString().getBytes();
-        exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
-        exchange.sendResponseHeaders(200, data.length);
-        exchange.getResponseBody().write(data);
-        exchange.getResponseBody().flush();
-        exchange.getResponseBody().close();
-        exchange.close();
     }
 
     public void handleResultInfo(HttpExchange exchange, String username, int examID) throws IOException {
