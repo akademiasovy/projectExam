@@ -71,7 +71,9 @@ public class Index implements HttpHandler {
     }
 
     public void handleTeacher(Teacher teacher, HttpExchange exchange) throws Exception {
-        byte[] bytes = new String(Utils.readResource("teachermain.html")).getBytes();
+        String data = new String(Utils.readResource("teachermain.html"));
+        data = data.replaceAll("\\$FULLNAME\\$",teacher.getFirstname()+" "+teacher.getLastname());
+        byte[] bytes = data.getBytes();
         exchange.getResponseHeaders().put("Cache-Control",Arrays.asList("no-cache"));
         exchange.sendResponseHeaders(200, bytes.length);
         exchange.getResponseBody().write(bytes);

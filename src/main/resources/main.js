@@ -536,5 +536,4 @@ function selectExam(id) {
 function logOut() {
     window.localStorage.clear();
     window.location.href = window.location.href;
-    //location.reload(true);
 }

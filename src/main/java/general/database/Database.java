@@ -83,13 +83,13 @@ public class Database {
         }
     }
 
-    public void refresh(Object object) {
+    public void createUser(User user) {
         Session session = factory.openSession();
         Transaction tx = null;
 
         try {
             tx = session.beginTransaction();
-            session.refresh(object);
+            session.save(user);
             tx.commit();
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();

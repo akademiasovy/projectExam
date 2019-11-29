@@ -3,57 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Teacher</title>
-    <link rel="stylesheet" href="./resources/sortable-light.css" type="text/css">
+    <link rel="stylesheet" id="theme" href="./resources/teachermain.css" type="text/css">
     <script src="./resources/jquery.js"></script>
     <script src="./resources/sortable.min.js"></script>
-    <style>
-        * {
-            font-family: sans-serif;
-        }
-    </style>
-    <script>
-        $(document).ready(function () {
-            $.ajax({
-                type: "GET",
-                url: "./exams/results",
-                dataType: "json",
-                headers: {"Authorization": window.localStorage.getItem("token")},
-                success: function (result) {
-                    var json = JSON.parse(result);
-                    var results = json.results;
-
-                    var tbody = $("#resultsTBody");
-
-                    for (var i = 0; i < results.length; i++) {
-                        var id = results[i].id;
-                        var student = results[i].student;
-                        var dateObj = new Date(results[i].date);
-                        var date = dateObj.getDate() + ". " + (dateObj.getMonth() + 1) + ". " + dateObj.getFullYear();
-                        var exam = results[i].name;
-                        var score = (Math.floor(parseFloat(results[i].correct) / parseFloat(results[i].questions) * 100)) + "% ("+results[i].correct+"/"+results[i].questions+")";
-                        tbody.append("<tr><td>" + id + "</td><td>"+student+"</td><td>" + date + "</td><td>" + exam + "</td><td>" + score + "</td></tr>");
-                    }
-
-                    Sortable.init();
-                },
-                error: function () {
-
-                },
-                dataType: "text"
-            });
-        });
-    </script>
+    <script src="./resources/teachermain.js"></script>
 </head>
 <body>
-<table id='resultsTable' class='sortable-theme-light sortable-theme-dark' data-sortable>
-    <thead>
-        <th>#</th>
-        <th>Student</th>
-        <th>Exam</th>
-        <th>Date</th>
-        <th>Score</th>
-    </thead>
-    <tbody id='resultsTBody'></tbody>
-</table>
+<div id="sidenav" class="sidenav">
+    <p>$FULLNAME$</p>
+    <a href="javascript:void(0)">Exams</a>
+    <a href="javascript:showResults()">Results</a>
+    <a href="javascript:void(0)">Students</a>
+    <a href="javascript:void(0)">Groups</a>
+    <p style="padding: 5px 0px 5px 0px; border: none;"></p>
+    <a href="javascript:logOut()">Log out</a>
+</div>
+
+<div id="main">
+    <div id="centerDiv"></div>
+</div>
 </body>
 </html>

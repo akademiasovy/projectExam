@@ -1,6 +1,8 @@
 package general;
 
+import general.database.Credentials;
 import general.database.Database;
+import general.database.Student;
 import general.net.*;
 import general.net.server.*;
 
@@ -27,6 +29,20 @@ public class Main {
         //TODO: Delete
         Database.getInstance().deleteResults();
 
+        /*Student student = new Student();
+        student.setFirstname("Firstname");
+        student.setLastname("Lastname");
+        Credentials credentials = new Credentials();
+        credentials.setLogin("testuser");
+        credentials.setEmail("user@test123.gov");
+        credentials.setSalt(PBKDF2WithHmacSHA256.createSalt(16));
+        credentials.setIterations(4096);
+        credentials.setPassword(PBKDF2WithHmacSHA256.hexHash("letmein",credentials.getSalt(),credentials.getIterations(),32));
+        student.setCredentials(credentials);
+        credentials.setUser(student);
+        Database.getInstance().createUser(student);*/
+
+
         Config.getInstance();
 
         Server server = new HTTPServer();
@@ -46,6 +62,8 @@ public class Main {
         fileManager.addFile("sortable.min.js","sortable.min.js");
         fileManager.addFile("sortable-light.css","sortable-theme-light.css");
         fileManager.addFile("sortable-dark.css","sortable-theme-dark.css");
+        fileManager.addFile("teachermain.css","teachermain.css");
+        fileManager.addFile("teachermain.js","teachermain.js");
         server.createContext("/resources",fileManager);
 
         server.start();
