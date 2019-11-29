@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 22, 2019 at 06:41 PM
+-- Generation Time: Nov 29, 2019 at 06:31 PM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -93,8 +93,9 @@ CREATE TABLE IF NOT EXISTS `credentials` (
   `password` char(64) DEFAULT NULL,
   `salt` char(32) DEFAULT NULL,
   `iterations` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`,`login`)
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `credentials`
@@ -102,7 +103,9 @@ CREATE TABLE IF NOT EXISTS `credentials` (
 
 INSERT INTO `credentials` (`id`, `email`, `login`, `password`, `salt`, `iterations`) VALUES
 (2, 'test@test.com', 'rm', 'EDAC56E46A2099ED27EC3F0356393BA2D77CC9CE6DAABA6FCFB8061A077BF194', '5A0DCA05F09F42804C089E53A106E1C9', 4096),
-(4, 'test2@test.com', 'ro', 'C163C8CE636468703B413E0A0F9F5C5C35B0EA79FC96A4399163B4ED25FFA1FC', '57D79A613CFA09F571F27ED09146C630', 4096);
+(4, 'test2@test.com', 'ro', 'C163C8CE636468703B413E0A0F9F5C5C35B0EA79FC96A4399163B4ED25FFA1FC', '57D79A613CFA09F571F27ED09146C630', 4096),
+(10, NULL, 'tomasj', 'kosice2019', 'kosice2019', NULL),
+(11, 'user@test123.gov', 'testuser', '7ADE9BCA4385622D5DB9A27A262449955EA398359F7E03761EE7DB905C5C10E0', 'FBB9A3733F29CC5A87F82B63490EE584', 4096);
 
 -- --------------------------------------------------------
 
@@ -225,14 +228,14 @@ CREATE TABLE IF NOT EXISTS `result` (
   PRIMARY KEY (`id`),
   KEY `idexam` (`idexam`),
   KEY `idstudent` (`idstudent`)
-) ENGINE=MyISAM AUTO_INCREMENT=156 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=158 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `result`
 --
 
 INSERT INTO `result` (`id`, `idstudent`, `idexam`, `date`, `correct`, `questions`) VALUES
-(155, 3, 5, '2019-11-22 19:39:17', 2, 3);
+(157, 3, 5, '2019-11-29 19:29:31', 2, 3);
 
 -- --------------------------------------------------------
 
@@ -271,7 +274,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `lastname` varchar(32) DEFAULT NULL,
   `type` enum('student','teacher') DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `user`
@@ -279,7 +282,9 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 INSERT INTO `user` (`id`, `idcredentials`, `firstname`, `lastname`, `type`) VALUES
 (3, 2, 'Richard', 'Miscik', 'student'),
-(4, 4, 'Roland', 'Onofrej', 'teacher');
+(4, 4, 'Roland', 'Onofrej', 'teacher'),
+(5, 10, 'Jakub', 'Tomas', 'student'),
+(6, 11, 'Firstname', 'Lastname', 'student');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
