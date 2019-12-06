@@ -61,6 +61,7 @@ function showExams() {
                 tbody.append("<tr"+(active?" style='background-color: #DFF3DF;'":"")+"><td>"+id+"</td><td>"+name+"</td><td>"+groups+"</td><td>"+questions+"</td><td data-value='"+exams[i].start+"'>"+start+"</td><td data-value='"+exams[i].end+"'>"+end+"</td><td data-value="+(active?1:0)+">"+(active?"Yes":"No")+"</td></tr>");
             }
 
+            appendButton("Create new exam","showEditExamForm()");
             Sortable.init();
             if (tbody.children().length > 0) $("#examsTHActive").click();
             $("#centerDiv").removeClass("skeleton");
@@ -185,4 +186,16 @@ function showGroups() {
 function logOut() {
     window.localStorage.clear();
     window.location.href = window.location.href;
+}
+
+function showEditExamForm(id) {
+
+
+    if (id != undefined && id != null) {
+        //TODO: Load exam data
+    }
+}
+
+function appendButton(text, onclick) {
+    $("#centerDiv").append("<button class='greenBtn rightAlign' onlick='"+onclick+"'>"+text+"</button>");
 }

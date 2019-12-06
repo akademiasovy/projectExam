@@ -20,7 +20,20 @@
 </div>
 
 <div id="main">
-    <div id="centerDiv"></div>
+    <div id="centerDiv" style="display:inline;">
+        <h1>Create new exam</h1>
+        <div class="scrollingForm">
+            <input id="examName" type="text" class="field" placeholder="Name">
+            <br>
+            <input id="examDesc" type="text" class="field" placeholder="Description">
+            <br>
+            <input id="examQuestionCount" type="number" class="field" placeholder="Questions">
+            <br><br><br><br><br>
+            <input id="examStart" type="datetime-local">
+            <input id="examEnd" type="datetime-local">
+        </div>
+        <button class="greenBtn rightAlign">Save exam</button>
+    </div>
 </div>
 </body>
 </html>

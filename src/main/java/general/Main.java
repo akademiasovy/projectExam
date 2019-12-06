@@ -27,7 +27,7 @@ public class Main {
         * */
 
         //TODO: Delete
-        Database.getInstance().deleteResults();
+        //Database.getInstance().deleteResults();
 
         /*Student student = new Student();
         student.setFirstname("Firstname");
