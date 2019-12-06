@@ -50,6 +50,8 @@ public class Main {
         server.createContext("/auth",new AuthAPI());
         server.createContext("/exams",new ExamAPI());
         server.createContext("/password",new PasswordAPI());
+        server.createContext("/students",new StudentAPI());
+        server.createContext("/groups",new GroupAPI());
 
         FileManager fileManager = server.getFileManager();
         fileManager.addFile("jquery.js","jquery3.4.1.min.js");

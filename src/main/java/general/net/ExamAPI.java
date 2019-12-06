@@ -96,35 +96,63 @@ public class ExamAPI implements HttpHandler {
         }
 
         User user = Database.getInstance().getCredentials(username).getUser();
-        if (!(user instanceof Student)) {
+        if (user instanceof Student) {
+            Student student = (Student) user;
+            List<Exam> exams = Database.getInstance().getExams(student, false, false);
+
+            JSONObject root = new JSONObject();
+            JSONArray examArray = new JSONArray();
+            for (Exam exam : exams) {
+                JSONObject examObject = new JSONObject();
+                examObject.put("name", exam.getName());
+                examObject.put("id", exam.getId());
+
+                examArray.add(examObject);
+            }
+
+            root.put("exams", examArray);
+
+            byte[] data = root.toJSONString().getBytes();
+            exchange.getResponseHeaders().put("Content-Type", Arrays.asList("application/json"));
+            exchange.sendResponseHeaders(200, data.length);
+            exchange.getResponseBody().write(data);
+            exchange.getResponseBody().flush();
+            exchange.getResponseBody().close();
+            exchange.close();
+        } else if (user instanceof Teacher) {
+            List<Exam> exams = Database.getInstance().getExams();
+
+            JSONObject root = new JSONObject();
+            JSONArray examArray = new JSONArray();
+            for (Exam exam : exams) {
+                JSONObject examObject = new JSONObject();
+                examObject.put("id",exam.getId());
+                examObject.put("name",exam.getName());
+                JSONArray groups = new JSONArray();
+                for (Group group : exam.getGroupSet()) {
+                    groups.add(group.getName());
+                }
+                examObject.put("groups",groups);
+                examObject.put("questions",exam.getQuestions());
+                examObject.put("start",exam.getStart().getTime());
+                examObject.put("end",exam.getEnd().getTime());
+
+                examArray.add(examObject);
+            }
+
+            root.put("exams", examArray);
+
+            byte[] data = root.toJSONString().getBytes();
+            exchange.getResponseHeaders().put("Content-Type", Arrays.asList("application/json"));
+            exchange.sendResponseHeaders(200, data.length);
+            exchange.getResponseBody().write(data);
+            exchange.getResponseBody().flush();
+            exchange.getResponseBody().close();
+            exchange.close();
+        } else {
             exchange.sendResponseHeaders(403,0);
             exchange.close();
-            return;
         }
-        Student student = (Student)user;
-
-        List<Exam> exams = Database.getInstance().getExams(student, false, false);
-
-        JSONObject root = new JSONObject();
-
-        JSONArray examArray = new JSONArray();
-        for (Exam exam : exams) {
-            JSONObject examObject = new JSONObject();
-            examObject.put("name",exam.getName());
-            examObject.put("id",exam.getId());
-
-            examArray.add(examObject);
-        }
-
-        root.put("exams",examArray);
-
-        byte[] data = root.toJSONString().getBytes();
-        exchange.getResponseHeaders().put("Content-Type",Arrays.asList("application/json"));
-        exchange.sendResponseHeaders(200, data.length);
-        exchange.getResponseBody().write(data);
-        exchange.getResponseBody().flush();
-        exchange.getResponseBody().close();
-        exchange.close();
     }
 
     public void handleExamInfo(HttpExchange exchange, String username, int examID) throws IOException {
@@ -444,7 +472,12 @@ public class ExamAPI implements HttpHandler {
             for (int i = 0; i < results.size(); i++) {
                 JSONObject resultObject = new JSONObject();
                 resultObject.put("id", results.get(i).getId());
-                resultObject.put("student", results.get(i).getStudent().getFirstname()+" "+results.get(i).getStudent().getLastname());
+
+                JSONObject studentObject = new JSONObject();
+                studentObject.put("id", results.get(i).getStudent().getId());
+                studentObject.put("name", results.get(i).getStudent().getFirstname()+" "+results.get(i).getStudent().getLastname());
+
+                resultObject.put("student", studentObject);
                 resultObject.put("name", results.get(i).getExam().getName());
                 resultObject.put("date", results.get(i).getDate().getTime());
                 resultObject.put("correct", results.get(i).getCorrect());

@@ -126,6 +126,58 @@ public class Database {
         return null;
     }
 
+    public List<Student> getStudents() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Student> query = cb.createQuery(Student.class);
+            Root<Student> root = query.from(Student.class);
+            CriteriaQuery<Student> all = query.select(root);
+
+            TypedQuery<Student> typedQuery = session.createQuery(all);
+            tx.commit();
+
+            return typedQuery.getResultList();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+
+        return null;
+    }
+
+    public List<Group> getGroups() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Group> query = cb.createQuery(Group.class);
+            Root<Group> root = query.from(Group.class);
+            CriteriaQuery<Group> all = query.select(root);
+
+            TypedQuery<Group> typedQuery = session.createQuery(all);
+            tx.commit();
+
+            return typedQuery.getResultList();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+
+        return null;
+    }
+
     public Credentials getCredentials(String username) {
         Session session = factory.openSession();
         Transaction tx = null;
@@ -173,7 +225,6 @@ public class Database {
         Set<Exam> examSet = new HashSet<Exam>();
         Date date = new Date();
 
-        //TODO: Maybe use inner join
         for (Group group : student.getGroupSet()) {
             for (Exam exam : new HashSet<Exam>(group.getExamSet())) {
                 if (includeInactive || (exam.getStart().getTime() <= date.getTime() && exam.getEnd().getTime() >= date.getTime())) {
@@ -194,6 +245,32 @@ public class Database {
         }
 
         return new ArrayList<Exam>(examSet);
+    }
+
+    public List<Exam> getExams() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Exam> query = cb.createQuery(Exam.class);
+            Root<Exam> root = query.from(Exam.class);
+            CriteriaQuery<Exam> all = query.select(root);
+
+            TypedQuery<Exam> typedQuery = session.createQuery(all);
+            tx.commit();
+
+            return typedQuery.getResultList();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+
+        return null;
     }
 
     public Exam getExam(int id) {

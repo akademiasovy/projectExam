@@ -1,4 +1,11 @@
 var interval;
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+function formatDate(date) {
+    return monthNames[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
+}
 
 if (window.localStorage.getItem("theme") == "dark") {
     $("#theme").attr("href","./resources/main-dark.css");
@@ -127,11 +134,10 @@ function showResults() {
 
                 for (var i = 0; i < results.length; i++) {
                     var number = results[i].number;
-                    var dateObj = new Date(results[i].date);
-                    var date = dateObj.getDate()+". "+(dateObj.getMonth()+1)+". "+dateObj.getFullYear();
+                    var date = formatDate(new Date(results[i].date));
                     var exam = results[i].name;
                     var score = (Math.floor(parseFloat(results[i].correct)/parseFloat(results[i].questions)*100))+"%";
-                    tbody.append("<tr><td>"+number+"</td><td>"+date+"</td><td>"+exam+"</td><td>"+score+"</td></tr>");
+                    tbody.append("<tr><td>"+number+"</td><td>"+exam+"</td><td data-value='"+results[i].date+"'>"+date+"</td><td>"+score+"</td></tr>");
                 }
 
                 Sortable.init();

@@ -3,7 +3,6 @@ package general.net;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import general.database.Database;
-import general.database.Student;
 import general.database.User;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
