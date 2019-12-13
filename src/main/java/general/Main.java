@@ -42,6 +42,9 @@ public class Main {
         credentials.setUser(student);
         Database.getInstance().createUser(student);*/
 
+        /*Credentials creds = Database.getInstance().getCredentials("ro");
+        creds.setPassword(PBKDF2WithHmacSHA256.hexHash("letmein",creds.getSalt(),creds.getIterations(),creds.getPassword().length()/2));
+        Database.getInstance().changeCredentials(creds);*/
 
         Config.getInstance();
 

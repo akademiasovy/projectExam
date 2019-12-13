@@ -29,8 +29,19 @@
             <br>
             <input id="examQuestionCount" type="number" class="field" placeholder="Questions">
             <br><br><br><br><br>
-            <input id="examStart" type="datetime-local">
-            <input id="examEnd" type="datetime-local">
+            <input id="examStart" class="left" type="datetime-local">
+            <input id="examEnd" class="right" type="datetime-local">
+            <br>
+            <h2 style="margin: 44px 0px 0px 0px; text-align: left;">Questions:</h2>
+            <br>
+            <div class="question">
+                <p>Question 1</p>
+                <input name="question" type="text" class="field" placeholder="Question">
+                <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)">
+                <input name="answerB" type="text" class="field" placeholder="Answer B">
+                <input name="answerC" type="text" class="field" placeholder="Answer C">
+                <input name="answerD" type="text" class="field" placeholder="Answer D">
+            </div>
         </div>
         <button class="greenBtn rightAlign">Save exam</button>
     </div>
