@@ -194,12 +194,12 @@ function logOut() {
 
 function showEditExamForm(id) {
 
+    $('#examGroups').select2({
+        placeholder: "Groups"
+    });
+
     if (id != undefined && id != null) {
         //TODO: Load exam data
-
-        $('#examGroups').select2({
-            placeholder: "Groups"
-        });
     }
 
 }
@@ -215,13 +215,55 @@ function addQuestion() {
 }
 
 function saveExam() {
+    var id = $("#examID").val();
     var name = $("#examName").val();
     var description = $("#examDesc").val();
     var questionCount = $("#examQuestionCount").val();
-    var start = $("#examStart").val();
-    var end = $("#examEnd").val();
+    var groups = $("#examGroups").val();
+    var start = new Date($("#examStart").val()).getTime()/1000;
+    var end = new Date($("#examEnd").val()).getTime()/1000;
 
     var questions = $(".question");
+    var questionArray = [];
+
+    questions.each(function (i, element) {
+        var questionObj = new Object();
+        var question = $(element);
+        questionObj.id = question.find("[name=id]").eq(0).val();
+        questionObj.name = question.find("[name='question']").eq(0).val();
+        questionObj.answerA = question.find("[name='answerA']").eq(0).val();
+        questionObj.answerB = question.find("[name='answerB']").eq(0).val();
+        questionObj.answerC = question.find("[name='answerC']").eq(0).val();
+        questionObj.answerD = question.find("[name='answerD']").eq(0).val();
+        questionArray[i] = questionObj;
+    });
+    
+    var object = new Object();
+    object.id = id;
+    object.name = name;
+    object.description = description;
+    object.questionCount = questionCount;
+    object.groups = groups;
+    object.start = start;
+    object.end = end;
+    object.questions = questionArray;
+
+    var json = JSON.stringify(object);
+
+    $.ajax({
+        type: "POST",
+        data: json,
+        url: "./exams/new",
+        dataType: "json",
+        headers: {"Authorization":window.localStorage.getItem("token")},
+        success: function (result) {
+            alert("Exam successfully created!")
+        },
+        error: function () {
+            alert("An error ocurred while saving the exam!")
+        },
+        dataType: "text"
+    });
 }
 
 function appendButton(text, onclick) {

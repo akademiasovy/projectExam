@@ -221,6 +221,22 @@ public class Database {
         }
     }
 
+    public void createExam(Exam exam) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+            session.save(exam);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
     public List<Exam> getExams(Student student, boolean includeInactive, boolean includeDone) {
         Set<Exam> examSet = new HashSet<Exam>();
         Date date = new Date();
