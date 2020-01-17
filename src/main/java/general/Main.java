@@ -69,6 +69,8 @@ public class Main {
         fileManager.addFile("sortable-dark.css","sortable-theme-dark.css");
         fileManager.addFile("teachermain.css","teachermain.css");
         fileManager.addFile("teachermain.js","teachermain.js");
+        fileManager.addFile("select2.min.css","select2.min.css");
+        fileManager.addFile("select2.min.js","select2.min.js");
         server.createContext("/resources",fileManager);
 
         server.start();

@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>Teacher</title>
     <link rel="stylesheet" id="theme" href="./resources/teachermain.css" type="text/css">
+    <link rel="stylesheet" href="./resources/select2.min.css" type="text/css">
     <script src="./resources/jquery.js"></script>
     <script src="./resources/sortable.min.js"></script>
+    <script src="./resources/select2.min.js"></script>
     <script src="./resources/teachermain.js"></script>
 </head>
 <body>
@@ -28,6 +30,14 @@
             <input id="examDesc" type="text" class="field" placeholder="Description">
             <br>
             <input id="examQuestionCount" type="number" class="field" placeholder="Questions">
+            <br>
+            <select id="examGroups" style="width: 100%; font-size: 14px; margin: 3px 0px 3px 0px;" multiple="multiple">
+                <optgroup label="Groups">
+                    <option value="1">Group 1</option>
+                    <option value="2">Group 2</option>
+                    <option value="3">Group 3</option>
+                </optgroup>
+            </select>
             <br><br><br><br><br>
             <input id="examStart" class="left" type="datetime-local">
             <input id="examEnd" class="right" type="datetime-local">
@@ -42,8 +52,9 @@
                 <input name="answerC" type="text" class="field" placeholder="Answer C">
                 <input name="answerD" type="text" class="field" placeholder="Answer D">
             </div>
+            <button id="addQuestionBtn" class="greenBtn" style="margin-top: 10px;" onclick="addQuestion()">Add question</button>
         </div>
-        <button class="greenBtn rightAlign">Save exam</button>
+        <button class="greenBtn rightAlign" onclick="saveExam">Save exam</button>
     </div>
 </div>
 </body>

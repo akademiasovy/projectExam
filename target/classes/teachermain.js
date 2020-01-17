@@ -17,6 +17,10 @@ $(document).ready(function() {
     } catch (err) {
         console.error(err.message);
     }
+
+    $('#examGroups').select2({
+        placeholder: "Groups"
+    });
 });
 
 function updateUI() {
@@ -190,10 +194,34 @@ function logOut() {
 
 function showEditExamForm(id) {
 
-
     if (id != undefined && id != null) {
         //TODO: Load exam data
+
+        $('#examGroups').select2({
+            placeholder: "Groups"
+        });
     }
+
+}
+
+function addQuestion() {
+    var questions = $(".question");
+
+    var question = $('<div class="question"> <p>Question '+(questions.length+1)+'</p><input name="question" type="text" class="field" placeholder="Question"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)"> <input name="answerB" type="text" class="field" placeholder="Answer B"> <input name="answerC" type="text" class="field" placeholder="Answer C"> <input name="answerD" type="text" class="field" placeholder="Answer D"> </div>');
+    question.insertAfter(questions.get(questions.length - 1));
+
+    var parent = questions.eq(0).parent();
+    parent.scrollTop(parent.prop("scrollHeight"));
+}
+
+function saveExam() {
+    var name = $("#examName").val();
+    var description = $("#examDesc").val();
+    var questionCount = $("#examQuestionCount").val();
+    var start = $("#examStart").val();
+    var end = $("#examEnd").val();
+
+    var questions = $(".question");
 }
 
 function appendButton(text, onclick) {
