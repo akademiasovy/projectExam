@@ -17,6 +17,8 @@ $(document).ready(function() {
     } catch (err) {
         console.error(err.message);
     }
+
+    showExams();
 });
 
 function updateUI() {
@@ -173,6 +175,7 @@ function showGroups() {
                 tbody.append("<tr><td>"+id+"</td><td>"+name+"</td><td>"+students+"</td><td>"+exams+"</td></tr>");
             }
 
+            appendButton("Create new group","showEditGroupForm()");
             Sortable.init();
             $("#centerDiv").removeClass("skeleton");
         },
@@ -199,6 +202,17 @@ function showEditExamForm(id) {
     if (id != undefined && id != null) {
         //TODO: Load exam data
         //TODO: Change #editExamHeader text to 'Edit [EXAM NAME]'
+    }
+
+    $("#centerDiv").css("display","inline");
+}
+
+function showEditGroupForm(id) {
+    $("#centerDiv").html(' <h1 id="editGroupHeader">Create new group</h1> <input id="groupID" type="hidden"> <input id="groupName" type="text" class="field" placeholder="Name"> <button class="greenBtn rightAlign" onclick="saveGroup()">Save group</button>');
+
+    if (id != undefined && id != null) {
+        //TODO: Load group data
+        //TODO: Change #editGroupHeader text to 'Edit [GROUP NAME]'
     }
 
     $("#centerDiv").css("display","inline");
@@ -257,10 +271,37 @@ function saveExam() {
         dataType: "json",
         headers: {"Authorization":window.localStorage.getItem("token")},
         success: function (result) {
-            alert("Exam successfully created!")
+            showExams();
+            alert("Exam successfully created!");
         },
         error: function () {
-            alert("An error ocurred while saving the exam!")
+            alert("An error ocurred while saving the exam!");
+        },
+        dataType: "text"
+    });
+}
+
+function saveGroup() {
+    var id = $("#groupID").val();
+    var name = $("#groupName").val();
+
+    var object = new Object();
+    object.id = id;
+    object.name = name;
+    var json = JSON.stringify(object);
+
+    $.ajax({
+        type: "POST",
+        data: json,
+        url: "./groups/new",
+        dataType: "json",
+        headers: {"Authorization":window.localStorage.getItem("token")},
+        success: function (result) {
+            showGroups();
+            alert("Group successfully created!");
+        },
+        error: function () {
+            alert("An error ocurred while saving the group!");
         },
         dataType: "text"
     });

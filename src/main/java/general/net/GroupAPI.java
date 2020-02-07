@@ -6,8 +6,10 @@ import general.Utils;
 import general.database.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class GroupAPI implements HttpHandler {
 
         if (reqURI.equals("/groups")) {
             this.handleGroupList(exchange, username);
+            return;
+        } else if (reqURI.equals("/groups/new")) {
+            this.handleCreateGroup(exchange, username);
             return;
         }
 
@@ -71,6 +76,36 @@ public class GroupAPI implements HttpHandler {
             exchange.getResponseBody().flush();
             exchange.getResponseBody().close();
             exchange.close();
+        } else {
+            exchange.sendResponseHeaders(403, 0);
+            exchange.close();
+        }
+    }
+
+    public void handleCreateGroup(HttpExchange exchange, String username) throws IOException {
+        if (!"POST".equals(exchange.getRequestMethod())) {
+            exchange.getResponseHeaders().put("Allow", Arrays.asList("POST"));
+            exchange.sendResponseHeaders(405, 0);
+            exchange.close();
+            return;
+        }
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (user instanceof Teacher) {
+            try {
+                JSONObject groupObject = ((JSONObject) new JSONParser().parse(new InputStreamReader(exchange.getRequestBody())));
+
+                Group group = new Group();
+                group.setName(String.valueOf(groupObject.get("name")));
+                Database.getInstance().createGroup(group);
+
+                exchange.sendResponseHeaders(201, 0);
+                exchange.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                exchange.sendResponseHeaders(500, 0);
+                exchange.close();
+            }
         } else {
             exchange.sendResponseHeaders(403, 0);
             exchange.close();

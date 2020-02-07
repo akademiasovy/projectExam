@@ -563,8 +563,8 @@ public class ExamAPI implements HttpHandler {
         JSONObject examObject = ((JSONObject)new JSONParser().parse(new InputStreamReader(exchange.getRequestBody())));
 
         Exam exam = new Exam();
-        exam.setName((String) examObject.get("name"));
-        exam.setDescription((String) examObject.get("description"));
+        exam.setName(String.valueOf(examObject.get("name")));
+        exam.setDescription(String.valueOf(examObject.get("description")));
         exam.setQuestions(Integer.parseInt(String.valueOf(examObject.get("questionCount"))));
         exam.setStart(new Date(Long.parseLong(String.valueOf(examObject.get("start")))*1000));
         exam.setEnd(new Date(Long.parseLong(String.valueOf((examObject.get("end"))))*1000));

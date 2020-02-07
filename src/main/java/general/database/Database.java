@@ -71,6 +71,7 @@ public class Database {
         try {
             tx = session.beginTransaction();
             session.createQuery("DELETE FROM Result").executeUpdate();
+            session.createQuery("DELETE FROM Result").executeUpdate();
             tx.commit();
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();
@@ -147,6 +148,22 @@ public class Database {
         }
 
         return null;
+    }
+
+    public void createGroup(Group group) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+            session.save(group);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
     }
 
     public List<Group> getGroups() {
