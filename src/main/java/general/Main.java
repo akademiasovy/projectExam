@@ -1,14 +1,19 @@
 package general;
-
-import general.database.Credentials;
-import general.database.Database;
-import general.database.Student;
 import general.net.*;
 import general.net.server.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        //TODO: SET QUESTION ID AS AUTO_INCREMENT!!!!
+        System.err.println("###############################################");
+        System.err.println("# REMINDER: SET QUESTION ID AS AUTO_INCREMENT #");
+        System.err.println("###############################################");
+        System.err.println();
+        System.err.println("# SQL:");
+        System.err.println("# ALTER TABLE question MODIFY id INTEGER NOT NULL AUTO_INCREMENT;");
+        System.exit(0);
+
         /*TODO:
         *
         * General:

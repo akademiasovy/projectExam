@@ -17,10 +17,6 @@ $(document).ready(function() {
     } catch (err) {
         console.error(err.message);
     }
-
-    $('#examGroups').select2({
-        placeholder: "Groups"
-    });
 });
 
 function updateUI() {
@@ -193,6 +189,8 @@ function logOut() {
 }
 
 function showEditExamForm(id) {
+    //TODO: Add remove question functionality
+    $("#centerDiv").html('<h1 id="editExamHeader">Create new exam</h1> <div class="scrollingForm"> <input id="examID" type="hidden"> <input id="examName" type="text" class="field" placeholder="Name"> <br><input id="examDesc" type="text" class="field" placeholder="Description"> <br><input id="examQuestionCount" type="number" class="field" placeholder="Questions"> <br><select id="examGroups" style="width: 100%; font-size: 14px; margin: 3px 0px 3px 0px;" multiple="multiple"> <optgroup id="groupsOptGroup" label="Groups"> <option value="5">Kvinta</option> </optgroup> </select> <br><br><br><br><br><input id="examStart" class="left" type="datetime-local"> <input id="examEnd" class="right" type="datetime-local"> <br><h2 style="margin: 44px 0px 0px 0px; text-align: left;">Questions:</h2> <br><div class="question"> <p>Question 1</p><input name="id" type="hidden"> <input name="question" type="text" class="field" placeholder="Question"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)"> <input name="answerB" type="text" class="field" placeholder="Answer B"> <input name="answerC" type="text" class="field" placeholder="Answer C"> <input name="answerD" type="text" class="field" placeholder="Answer D"> </div><button id="addQuestionBtn" class="greenBtn" style="margin-top: 10px;" onclick="addQuestion()">Add question</button> </div><button class="greenBtn rightAlign" onclick="saveExam()">Save exam</button>');
 
     $('#examGroups').select2({
         placeholder: "Groups"
@@ -200,8 +198,10 @@ function showEditExamForm(id) {
 
     if (id != undefined && id != null) {
         //TODO: Load exam data
+        //TODO: Change #editExamHeader text to 'Edit [EXAM NAME]'
     }
 
+    $("#centerDiv").css("display","inline");
 }
 
 function addQuestion() {
@@ -267,5 +267,5 @@ function saveExam() {
 }
 
 function appendButton(text, onclick) {
-    $("#centerDiv").append("<button class='greenBtn rightAlign' onlick='"+onclick+"'>"+text+"</button>");
+    $("#centerDiv").append("<button class='greenBtn rightAlign' onclick='"+onclick+"'>"+text+"</button>");
 }

@@ -11,8 +11,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import javax.xml.crypto.Data;
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -85,7 +83,7 @@ public class ExamAPI implements HttpHandler {
             return;
         } else if (reqURI.matches("/exams/new")) {
             try {
-                this.createExam(exchange, username);
+                this.handleCreateExam(exchange, username);
             } catch (Exception ex) {ex.printStackTrace();}
             return;
         }
@@ -547,7 +545,7 @@ public class ExamAPI implements HttpHandler {
         exchange.close();
     }
 
-    public void createExam(HttpExchange exchange, String username) throws Exception {
+    public void handleCreateExam(HttpExchange exchange, String username) throws Exception {
         if (!"POST".equals(exchange.getRequestMethod())) {
             exchange.getResponseHeaders().put("Allow", Arrays.asList("POST"));
             exchange.sendResponseHeaders(405,0);
@@ -568,8 +566,8 @@ public class ExamAPI implements HttpHandler {
         exam.setName((String) examObject.get("name"));
         exam.setDescription((String) examObject.get("description"));
         exam.setQuestions(Integer.parseInt(String.valueOf(examObject.get("questionCount"))));
-        exam.setStart(new java.sql.Date(Integer.parseInt(String.valueOf(examObject.get("start")))));
-        exam.setEnd(new java.sql.Date(Integer.parseInt(String.valueOf((examObject.get("end"))))));
+        exam.setStart(new Date(Long.parseLong(String.valueOf(examObject.get("start")))*1000));
+        exam.setEnd(new Date(Long.parseLong(String.valueOf((examObject.get("end"))))*1000));
 
         HashSet<Group> groupSet = new HashSet<Group>();
 
@@ -580,6 +578,7 @@ public class ExamAPI implements HttpHandler {
             for (Group group : groups) {
                 if (group.getId() == id) {
                     groupSet.add(group);
+                    group.getExamSet().add(exam);
                     System.out.println(group.getName());
                     break;
                 }
@@ -596,6 +595,7 @@ public class ExamAPI implements HttpHandler {
 
             Question question = new Question();
             question.setName((String)questionObject.get("name"));
+            question.setExam(exam);
 
             Answer answerA = new Answer();
             answerA.setName((String)questionObject.get("answerA"));
@@ -603,16 +603,19 @@ public class ExamAPI implements HttpHandler {
             answerA.setCorrect(true);
 
             Answer answerB = new Answer();
-            answerA.setName((String)questionObject.get("answerB"));
-            answerA.setQuestion(question);
+            answerB.setName((String)questionObject.get("answerB"));
+            answerB.setQuestion(question);
+            answerB.setCorrect(false);
 
             Answer answerC = new Answer();
-            answerA.setName((String)questionObject.get("answerC"));
-            answerA.setQuestion(question);
+            answerC.setName((String)questionObject.get("answerC"));
+            answerC.setQuestion(question);
+            answerC.setCorrect(false);
 
             Answer answerD = new Answer();
-            answerA.setName((String)questionObject.get("answerD"));
-            answerA.setQuestion(question);
+            answerD.setName((String)questionObject.get("answerD"));
+            answerD.setQuestion(question);
+            answerD.setCorrect(false);
 
             HashSet<Answer> answerSet = new HashSet<Answer>();
             answerSet.add(answerA);
@@ -626,7 +629,6 @@ public class ExamAPI implements HttpHandler {
 
         exam.setQuestionSet(questionSet);
 
-        //TODO: Questions, answers and dates don't get saved
         Database.getInstance().createExam(exam);
 
         exchange.sendResponseHeaders(201, 0);

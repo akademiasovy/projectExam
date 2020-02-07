@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class Answer {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
 
@@ -17,7 +17,7 @@ public class Answer {
     private boolean correct;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="idquestion", nullable=false)
+    @JoinColumn(name="idquestion"/*, nullable=false*/)
     private Question question;
 
     public Answer() {

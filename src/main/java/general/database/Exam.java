@@ -1,7 +1,7 @@
 package general.database;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -14,10 +14,14 @@ public class Exam {
     private String name;
     private String description;
     private int questions;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date start;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date end;
 
-    @OneToMany(mappedBy="exam", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="exam", fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     private Set<Question> questionSet;
 
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
@@ -27,7 +31,7 @@ public class Exam {
     )
     private Set<Group> groupSet;
 
-    @OneToMany(mappedBy="exam", fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy="exam", fetch = FetchType.EAGER)
     private Set<Result> resultSet;
 
     public Exam() {

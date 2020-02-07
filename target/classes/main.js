@@ -7,6 +7,10 @@ function formatDate(date) {
     return monthNames[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
 }
 
+function formatDateTime(date) {
+    return monthNames[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear()+" "+date.getHours()+":"+date.getMinutes();
+}
+
 if (window.localStorage.getItem("theme") == "dark") {
     $("#theme").attr("href","./resources/main-dark.css");
 } else {
@@ -110,7 +114,7 @@ function changeTheme() {
 }
 
 function showSettings() {
-    $("#centerDiv").html('<h1>Settings</h1> <p style="margin-bottom: 41px;"></p> <p style="text-align: center; font-size: 24px; font-weight: bold;">Change password</p> <input type="password" id="oldPassword" name="password" placeholder="Old password"> <p style="margin: 0px 0px 15px 0px;"></p> <input type="password" id="newPassword" name="password" oninput="checkPassword()" placeholder="New password"> <p style="margin: 0px 0px 5px 0px;"></p> <input type="password" id="confirmPassword" name="password" oninput="checkPasswordMatch()" placeholder="Confirm password"> <p id="error" style="display: none;"></p>  <p style="margin: 0px 0px 35px 0px;"></p> <button onclick="changePassword()" class="greenBtn" style="width: 200px;">Change password</button> <ul class="requirements"><li id="reqHeader" style="font-weight: bold; margin-bottom: 5px;">Requirements:</li><li id="reqLength">At least 8 characters</li><li id="reqLower">At least 1 lowercase letter</li><li id="reqUpper">At least 1 uppercase letter</li><li id="reqDigit">At least 1 digit</li><li id="reqMatch">Passwords must match</li></ul>');
+    $("#centerDiv").html('<h1>Change password</h1> <!-- <h1>Settings</h1> --> <p style="margin-bottom: 41px;"></p> <!-- <p style="text-align: center; font-size: 24px; font-weight: bold;">Change password</p> --> <input type="password" id="oldPassword" name="password" placeholder="Old password"> <p style="margin: 0px 0px 15px 0px;"></p> <input type="password" id="newPassword" name="password" oninput="checkPassword()" placeholder="New password"> <p style="margin: 0px 0px 5px 0px;"></p> <input type="password" id="confirmPassword" name="password" oninput="checkPasswordMatch()" placeholder="Confirm password"> <p id="error" style="display: none;"></p>  <p style="margin: 0px 0px 35px 0px;"></p> <button onclick="changePassword()" class="greenBtn" style="width: 200px;">Change password</button> <ul class="requirements"><li id="reqHeader" style="font-weight: bold; margin-bottom: 5px;">Requirements:</li><li id="reqLength">At least 8 characters</li><li id="reqLower">At least 1 lowercase letter</li><li id="reqUpper">At least 1 uppercase letter</li><li id="reqDigit">At least 1 digit</li><li id="reqMatch">Passwords must match</li></ul>');
     $('#centerDiv').css('display','inline');
     $('#mainPlaceholder').css('display','none');
 }
@@ -524,7 +528,7 @@ function selectExam(id) {
             $('#examInfoName').text(exam.name);
             $('#examInfoDesc').html("<b>Description:</b> "+exam.description);
             $('#examInfoQuestions').html("<b>Questions:</b> "+exam.questions);
-            $('#examInfoDeadline').html("<b>Deadline:</b> "+new Date(exam.end).toDateString());
+            $('#examInfoDeadline').html("<b>Deadline:</b> "+formatDateTime(new Date(exam.end)));
             $('#centerDiv').removeClass("skeleton");
         },
         error: function(jqXHR, textStatus, errorThrown) {

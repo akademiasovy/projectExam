@@ -8,6 +8,7 @@ import java.util.Set;
 public class Question {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
 
@@ -15,7 +16,7 @@ public class Question {
     @JoinColumn(name="idexam", nullable=false)
     private Exam exam;
 
-    @OneToMany(mappedBy="question", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="question", fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     private Set<Answer> answers;
 
     public Question() {
