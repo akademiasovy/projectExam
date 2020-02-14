@@ -242,6 +242,7 @@ public class Database {
         try {
             tx = session.beginTransaction();
             session.save(exam);
+
             tx.commit();
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();

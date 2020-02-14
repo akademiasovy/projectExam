@@ -79,6 +79,10 @@ public class StartedExam {
         return null;
     }
 
+    public long getElapsedTime() {
+        return new Date().getTime()-this.startTime.getTime();
+    }
+
     public Student getStudent() {
         return student;
     }

@@ -11,6 +11,7 @@ public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
     private String name;
 
     @Type(type = "org.hibernate.type.NumericBooleanType")

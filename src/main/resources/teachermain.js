@@ -8,6 +8,13 @@ function formatDate(date) {
     return monthNames[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
 }
 
+function formatTime(millis) {
+    var hours = Math.floor(millis/3600000);
+    var minutes = Math.floor((millis-hours*3600000)/60000);
+    var seconds = Math.floor((millis-hours*3600000-minutes*60000)/1000);
+    return hours+":"+minutes+":"+seconds;
+}
+
 $(document).ready(function() {
     updateUI();
     window.onresize = function(event) {
@@ -20,7 +27,7 @@ $(document).ready(function() {
         console.error(err.message);
     }
 
-    showExams();
+    showExamshowExams();
 });
 
 function updateUI() {
@@ -68,6 +75,42 @@ function showExams() {
             appendButton("Create new exam","showEditExamForm()");
             Sortable.init();
             if (tbody.children().length > 0) $("#examsTHActive").click();
+            $("#centerDiv").removeClass("skeleton");
+        },
+        error: function () {
+            $("#centerDiv").removeClass("skeleton");
+        },
+        dataType: "text"
+    });
+}
+
+function showStartedExams() {
+    $('#centerDiv').addClass("skeleton");
+    $('#centerDiv').html("<h1>Started Exams</h1><div style='max-height: 300px; overflow: auto;'> <table id='startedExamsTable' class='sortable-theme-light sortable-theme-dark' data-sortable> <thead> <th>#</th> <th>Name</th> <th>Student's ID</th> <th>Student's Name</th> <th>Elapsed Time</th> </thead> <tbody id='startedExamsTBody'></tbody> </table></div>");
+    $('#centerDiv').css('display','inline');
+
+    $.ajax({
+        type: "GET",
+        url: "./exams/started",
+        dataType: "json",
+        headers: {"Authorization":window.localStorage.getItem("token")},
+        success: function (result) {
+            var json = JSON.parse(result);
+            var exams = json.exams;
+
+            var tbody = $("#startedExamsTBody");
+
+            for (var i = 0; i < exams.length; i++) {
+                var id = exams[i].id;
+                var name = exams[i].name;
+                var elapsedTime = exams[i].elapsedtime;
+                var studentID = exams[i].id;
+                var studentName = exams[i].student.firstname+" "+exams[i].student.lastname;
+
+                tbody.append("<tr><td>"+id+"</td><td>"+name+"</td><td>"+studentID+"</td><td>"+studentName+"</td><td data-value="+elapsedTime+">"+formatTime(elapsedTime)+"</td></tr>");
+            }
+
+            Sortable.init();
             $("#centerDiv").removeClass("skeleton");
         },
         error: function () {
@@ -330,8 +373,9 @@ function saveExam() {
             showExams();
             alert("Exam successfully created!");
         },
-        error: function () {
-            alert("An error ocurred while saving the exam!");
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 400) alert("At least one required field is empty!");
+            else alert("An error ocurred while saving the exam!");
         },
         dataType: "text"
     });
@@ -367,8 +411,9 @@ function saveStudent() {
             showStudents();
             alert("Student successfully created!");
         },
-        error: function () {
-            alert("An error ocurred while saving the student!");
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 400) alert("At least one required field is empty!");
+            else alert("An error ocurred while saving the student!");
         },
         dataType: "text"
     });
@@ -393,8 +438,9 @@ function saveGroup() {
             showGroups();
             alert("Group successfully created!");
         },
-        error: function () {
-            alert("An error ocurred while saving the group!");
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 400) alert("At least one required field is empty!");
+            else alert("An error ocurred while saving the group!");
         },
         dataType: "text"
     });

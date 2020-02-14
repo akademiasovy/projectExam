@@ -184,6 +184,7 @@ public class ExamAPI implements HttpHandler {
                 JSONObject examObject = new JSONObject();
                 examObject.put("id",exam.getExam().getId());
                 examObject.put("name",exam.getExam().getName());
+                examObject.put("elapsedtime",exam.getElapsedTime());
 
                 JSONObject studentObject = new JSONObject();
                 studentObject.put("id",exam.getStudent().getId());
