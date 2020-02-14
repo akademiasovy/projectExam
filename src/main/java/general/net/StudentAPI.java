@@ -2,13 +2,19 @@ package general.net;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import general.Config;
+import general.PBKDF2WithHmacSHA256;
 import general.Utils;
 import general.database.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public class StudentAPI implements HttpHandler {
@@ -31,6 +37,11 @@ public class StudentAPI implements HttpHandler {
 
         if (reqURI.equals("/students")) {
             this.handleStudentList(exchange, username);
+            return;
+        } else if (reqURI.equals("/students/new")) {
+            try {
+                this.handleCreateStudent(exchange, username);
+            } catch (Exception ex) { ex.printStackTrace(); }
             return;
         }
 
@@ -81,6 +92,66 @@ public class StudentAPI implements HttpHandler {
             exchange.sendResponseHeaders(403,0);
             exchange.close();
         }
+    }
+
+    public void handleCreateStudent(HttpExchange exchange, String username) throws Exception {
+        if (!"POST".equals(exchange.getRequestMethod())) {
+            exchange.getResponseHeaders().put("Allow", Arrays.asList("POST"));
+            exchange.sendResponseHeaders(405,0);
+            exchange.close();
+            return;
+        }
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Teacher)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+
+        JSONObject studentObject = ((JSONObject)new JSONParser().parse(new InputStreamReader(exchange.getRequestBody())));
+
+        if (!Utils.checkStringField(studentObject.get("firstname"),1,-1) || !Utils.checkStringField(studentObject.get("lastname"),1,-1) ||
+                !Utils.checkStringField(studentObject.get("username"),1,-1) || studentObject.get("email") == null || !Utils.checkStringField(studentObject.get("password"),1,-1)) {
+            exchange.sendResponseHeaders(400, 0);
+            exchange.close();
+            return;
+        }
+
+        Student student = new Student();
+        student.setFirstname(String.valueOf(studentObject.get("firstname")));
+        student.setLastname(String.valueOf(studentObject.get("lastname")));
+
+        HashSet<Group> groupSet = new HashSet<Group>();
+
+        JSONArray groupArray = (JSONArray) studentObject.get("groups");
+        List<Group> groups = Database.getInstance().getGroups();
+        for (Object obj : groupArray) {
+            int id = Integer.parseInt(String.valueOf(obj));
+            for (Group group : groups) {
+                if (group.getId() == id) {
+                    groupSet.add(group);
+                    group.getStudentSet().add(student);
+                    System.out.println(group.getName());
+                    break;
+                }
+            }
+        }
+        student.setGroupSet(groupSet);
+
+        Credentials credentials = new Credentials();
+        credentials.setLogin(String.valueOf(studentObject.get("username")));
+        credentials.setEmail(String.valueOf(studentObject.get("email")));
+        credentials.setSalt(PBKDF2WithHmacSHA256.createSalt(Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("saltLength")))));
+        credentials.setIterations(Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("iterations"))));
+        credentials.setPassword(PBKDF2WithHmacSHA256.hexHash(String.valueOf(studentObject.get("password")),credentials.getSalt(),credentials.getIterations(),Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("derivedKeyLength")))));
+        credentials.setUser(student);
+        student.setCredentials(credentials);
+
+        Database.getInstance().createUser(student);
+
+        exchange.sendResponseHeaders(201, 0);
+        exchange.close();
     }
 
 }

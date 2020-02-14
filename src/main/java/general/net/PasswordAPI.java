@@ -70,7 +70,8 @@ public class PasswordAPI implements HttpHandler {
             if (credentials.checkPassword(oldPassword)) {
                 if (newPassword.length() >= 8 && this.lowerCase.matcher(newPassword).find() && this.upperCase.matcher(newPassword).find() && this.digit.matcher(newPassword).find()) {
                     credentials.setSalt(PBKDF2WithHmacSHA256.createSalt(Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("saltLength")))));
-                    credentials.setPassword(PBKDF2WithHmacSHA256.hexHash(newPassword,credentials.getSalt(),Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("iterations"))),Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("derivedKeyLength")))));
+                    credentials.setIterations(Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("iterations"))));
+                    credentials.setPassword(PBKDF2WithHmacSHA256.hexHash(newPassword,credentials.getSalt(),credentials.getIterations(),Integer.parseInt(String.valueOf(Config.getInstance().getPBKDF2Config().get("derivedKeyLength")))));
                     Database.getInstance().changeCredentials(credentials);
 
                     TokenHandler.getInstance().invalidate(username);

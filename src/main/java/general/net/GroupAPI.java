@@ -95,6 +95,12 @@ public class GroupAPI implements HttpHandler {
             try {
                 JSONObject groupObject = ((JSONObject) new JSONParser().parse(new InputStreamReader(exchange.getRequestBody())));
 
+                if (!Utils.checkStringField(groupObject.get("name"),1,-1)) {
+                    exchange.sendResponseHeaders(400, 0);
+                    exchange.close();
+                    return;
+                }
+
                 Group group = new Group();
                 group.setName(String.valueOf(groupObject.get("name")));
                 Database.getInstance().createGroup(group);

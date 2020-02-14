@@ -1,3 +1,5 @@
+//TODO: Add started exams
+
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
@@ -141,6 +143,7 @@ function showStudents() {
                 tbody.append("<tr><td>"+id+"</td><td>"+name+"</td><td>"+login+"</td><td>"+groups+"</td><td>"+results+"</td></tr>");
             }
 
+            appendButton("Create new student","showEditStudentForm()");
             Sortable.init();
             $("#centerDiv").removeClass("skeleton");
         },
@@ -193,10 +196,29 @@ function logOut() {
 
 function showEditExamForm(id) {
     //TODO: Add remove question functionality
-    $("#centerDiv").html('<h1 id="editExamHeader">Create new exam</h1> <div class="scrollingForm"> <input id="examID" type="hidden"> <input id="examName" type="text" class="field" placeholder="Name"> <br><input id="examDesc" type="text" class="field" placeholder="Description"> <br><input id="examQuestionCount" type="number" class="field" placeholder="Questions"> <br><select id="examGroups" style="width: 100%; font-size: 14px; margin: 3px 0px 3px 0px;" multiple="multiple"> <optgroup id="groupsOptGroup" label="Groups"> <option value="5">Kvinta</option> </optgroup> </select> <br><br><br><br><br><input id="examStart" class="left" type="datetime-local"> <input id="examEnd" class="right" type="datetime-local"> <br><h2 style="margin: 44px 0px 0px 0px; text-align: left;">Questions:</h2> <br><div class="question"> <p>Question 1</p><input name="id" type="hidden"> <input name="question" type="text" class="field" placeholder="Question"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)"> <input name="answerB" type="text" class="field" placeholder="Answer B"> <input name="answerC" type="text" class="field" placeholder="Answer C"> <input name="answerD" type="text" class="field" placeholder="Answer D"> </div><button id="addQuestionBtn" class="greenBtn" style="margin-top: 10px;" onclick="addQuestion()">Add question</button> </div><button class="greenBtn rightAlign" onclick="saveExam()">Save exam</button>');
+    $("#centerDiv").html('<h1 id="editExamHeader">Create new exam</h1> <div class="scrollingForm"> <input id="examID" type="hidden"> <input id="examName" type="text" class="field" placeholder="Name"> <br><input id="examDesc" type="text" class="field" placeholder="Description"> <br><input id="examQuestionCount" type="number" class="field" placeholder="Questions"> <br><select id="examGroups" style="width: 100%; font-size: 14px; margin: 3px 0px 3px 0px;" multiple="multiple"> <optgroup id="examGroupsOptGroup" label="Groups"> </optgroup> </select> <br><br><br><br><br><input id="examStart" class="left" type="datetime-local"> <input id="examEnd" class="right" type="datetime-local"> <br><h2 style="margin: 44px 0px 0px 0px; text-align: left;">Questions:</h2> <br><div class="question"> <p>Question 1</p><input name="id" type="hidden"> <input name="question" type="text" class="field" placeholder="Question"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)"> <input name="answerB" type="text" class="field" placeholder="Answer B"> <input name="answerC" type="text" class="field" placeholder="Answer C"> <input name="answerD" type="text" class="field" placeholder="Answer D"> </div><button id="addQuestionBtn" class="greenBtn" style="margin-top: 10px;" onclick="addQuestion()">Add question</button> </div><button class="greenBtn rightAlign" onclick="saveExam()">Save exam</button>');
 
     $('#examGroups').select2({
         placeholder: "Groups"
+    });
+
+    $.ajax({
+            type: "GET",
+            url: "./groups",
+            dataType: "json",
+            headers: {"Authorization":window.localStorage.getItem("token")},
+            success: function (result) {
+                var json = JSON.parse(result);
+                json.groups.forEach(function(group) {
+                    var newOption = new Option(group.name, group.id, false, false);
+                    $('#examGroupsOptGroup').append(newOption)/*.trigger('change')*/;
+                });
+                $('#examGroups').trigger('change');
+            },
+            error: function () {
+                alert("Failed to load groups!");
+            },
+            dataType: "text"
     });
 
     if (id != undefined && id != null) {
@@ -207,8 +229,42 @@ function showEditExamForm(id) {
     $("#centerDiv").css("display","inline");
 }
 
+function showEditStudentForm(id) {
+    $("#centerDiv").html(' <h1 id="editGroupHeader">Create new student</h1> <input id="studentID" type="hidden"> <input id="studentFirstName" type="text" class="field" placeholder="First Name"> <input id="studentLastName" type="text" class="field" placeholder="Last Name"> <input id="studentUsername" type="text" class="field" placeholder="Username"> <input id="studentEmail" type="text" class="field" placeholder="E-mail"> <input id="studentPassword" type="password" class="field" placeholder="Password"> <br><select id="studentGroups" style="width: 100%; font-size: 14px; margin: 3px 0px 3px 0px;" multiple="multiple"> <optgroup id="studentGroupsOptGroup" label="Groups"> </optgroup> </select> <button class="greenBtn rightAlign" onclick="saveStudent()">Save student</button>');
+
+    $('#studentGroups').select2({
+        placeholder: "Groups"
+    });
+
+    $.ajax({
+        type: "GET",
+        url: "./groups",
+        dataType: "json",
+        headers: {"Authorization":window.localStorage.getItem("token")},
+        success: function (result) {
+            var json = JSON.parse(result);
+            json.groups.forEach(function(group) {
+            var newOption = new Option(group.name, group.id, false, false);
+                $('#studentGroupsOptGroup').append(newOption)/*.trigger('change')*/;
+            });
+            $('#studentGroups').trigger('change');
+        },
+        error: function () {
+            alert("Failed to load groups!");
+        },
+        dataType: "text"
+    });
+
+    if (id != undefined && id != null) {
+        //TODO: Load group data
+        //TODO: Change #editGroupHeader text to 'Edit [GROUP NAME]'
+    }
+
+    $("#centerDiv").css("display","inline");
+}
+
 function showEditGroupForm(id) {
-    $("#centerDiv").html(' <h1 id="editGroupHeader">Create new group</h1> <input id="groupID" type="hidden"> <input id="groupName" type="text" class="field" placeholder="Name"> <button class="greenBtn rightAlign" onclick="saveGroup()">Save group</button>');
+    $("#centerDiv").html('<h1 id="editGroupHeader">Create new group</h1> <input id="groupID" type="hidden"> <input id="groupName" type="text" class="field" placeholder="Name"> <button class="greenBtn rightAlign" onclick="saveGroup()">Save group</button>');
 
     if (id != undefined && id != null) {
         //TODO: Load group data
@@ -276,6 +332,43 @@ function saveExam() {
         },
         error: function () {
             alert("An error ocurred while saving the exam!");
+        },
+        dataType: "text"
+    });
+}
+
+function saveStudent() {
+    var id = $("#studentID").val();
+    var firstname = $("#studentFirstName").val();
+    var lastname = $("#studentLastName").val();
+    var username = $("#studentUsername").val();
+    var email = $("#studentEmail").val();
+    var password = $("#studentPassword").val();
+    var groups = $("#studentGroups").val();
+
+    var object = new Object();
+    object.id = id;
+    object.firstname = firstname;
+    object.lastname = lastname;
+    object.username = username;
+    object.email = email;
+    object.password = password;
+    object.groups = groups;
+
+    var json = JSON.stringify(object);
+
+    $.ajax({
+        type: "POST",
+        data: json,
+        url: "./students/new",
+        dataType: "json",
+        headers: {"Authorization":window.localStorage.getItem("token")},
+        success: function (result) {
+            showStudents();
+            alert("Student successfully created!");
+        },
+        error: function () {
+            alert("An error ocurred while saving the student!");
         },
         dataType: "text"
     });

@@ -34,6 +34,35 @@ public class Utils {
         return builder.toString();
     }
 
+    public static boolean checkStringField(Object object, int minLength, int maxLength) {
+        if (object instanceof String) {
+            int length = ((String)object).length();
+            if (minLength > -1 && length < minLength) return false;
+            if (maxLength > -1 && length > maxLength) return false;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean checkIntField(Object object) {
+        try {
+            Integer.parseInt(String.valueOf(object));
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public static boolean checkLongField(Object object) {
+        try {
+            Long.parseLong(String.valueOf(object));
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
     //TODO: Store token in secure httpOnly cookie
     public static String parseToken(HttpExchange exchange) {
         return exchange.getRequestHeaders().getFirst("Authorization");

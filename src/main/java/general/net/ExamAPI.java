@@ -86,7 +86,13 @@ public class ExamAPI implements HttpHandler {
                 this.handleCreateExam(exchange, username);
             } catch (Exception ex) {ex.printStackTrace();}
             return;
+        } else if (reqURI.matches("/exams/started")) {
+            try {
+                this.handleStartedExamList(exchange, username);
+            } catch (Exception ex) {ex.printStackTrace();}
+            return;
         }
+
 
         exchange.sendResponseHeaders(404,0);
         exchange.close();
@@ -141,6 +147,49 @@ public class ExamAPI implements HttpHandler {
                 examObject.put("questions",exam.getQuestions());
                 examObject.put("start",exam.getStart().getTime());
                 examObject.put("end",exam.getEnd().getTime());
+
+                examArray.add(examObject);
+            }
+
+            root.put("exams", examArray);
+
+            byte[] data = root.toJSONString().getBytes();
+            exchange.getResponseHeaders().put("Content-Type", Arrays.asList("application/json"));
+            exchange.sendResponseHeaders(200, data.length);
+            exchange.getResponseBody().write(data);
+            exchange.getResponseBody().flush();
+            exchange.getResponseBody().close();
+            exchange.close();
+        } else {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+        }
+    }
+
+    public void handleStartedExamList(HttpExchange exchange, String username) throws IOException {
+        if (!"GET".equals(exchange.getRequestMethod())) {
+            exchange.getResponseHeaders().put("Allow", Arrays.asList("GET"));
+            exchange.sendResponseHeaders(405,0);
+            exchange.close();
+            return;
+        }
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (user instanceof Teacher) {
+            List<StartedExam> exams = ExamManager.getInstance().getStartedExams();
+
+            JSONObject root = new JSONObject();
+            JSONArray examArray = new JSONArray();
+            for (StartedExam exam : exams) {
+                JSONObject examObject = new JSONObject();
+                examObject.put("id",exam.getExam().getId());
+                examObject.put("name",exam.getExam().getName());
+
+                JSONObject studentObject = new JSONObject();
+                studentObject.put("id",exam.getStudent().getId());
+                studentObject.put("firstname",exam.getStudent().getFirstname());
+                studentObject.put("lastname",exam.getStudent().getLastname());
+                examObject.put("student",studentObject);
 
                 examArray.add(examObject);
             }
@@ -561,6 +610,13 @@ public class ExamAPI implements HttpHandler {
         }
 
         JSONObject examObject = ((JSONObject)new JSONParser().parse(new InputStreamReader(exchange.getRequestBody())));
+
+        if (!Utils.checkStringField(examObject.get("name"),1,-1) || !Utils.checkStringField(examObject.get("description"),1,-1) ||
+                !Utils.checkIntField(examObject.get("questionCount")) || !Utils.checkLongField(examObject.get("start")) || !Utils.checkLongField(examObject.get("end"))) {
+            exchange.sendResponseHeaders(400, 0);
+            exchange.close();
+            return;
+        }
 
         Exam exam = new Exam();
         exam.setName(String.valueOf(examObject.get("name")));

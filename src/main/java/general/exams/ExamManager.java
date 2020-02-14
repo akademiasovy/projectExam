@@ -58,4 +58,7 @@ public class ExamManager {
         return null;
     }
 
+    public List<StartedExam> getStartedExams() {
+        return exams;
+    }
 }
