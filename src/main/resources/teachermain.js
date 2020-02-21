@@ -1,5 +1,3 @@
-//TODO: Add started exams
-
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
@@ -27,7 +25,7 @@ $(document).ready(function() {
         console.error(err.message);
     }
 
-    showExamshowExams();
+    showExams();
 });
 
 function updateUI() {
@@ -69,7 +67,7 @@ function showExams() {
                 var end = formatDate(new Date(exams[i].end));
                 var date = Date.now();
                 var active = Number(exams[i].start) < date && Number(exams[i].end) > date;
-                tbody.append("<tr"+(active?" style='background-color: #DFF3DF;'":"")+"><td>"+id+"</td><td>"+name+"</td><td>"+groups+"</td><td>"+questions+"</td><td data-value='"+exams[i].start+"'>"+start+"</td><td data-value='"+exams[i].end+"'>"+end+"</td><td data-value="+(active?1:0)+">"+(active?"Yes":"No")+"</td></tr>");
+                tbody.append("<tr"+(active?" style='background-color: #DFF3DF;'":"")+"><td>"+id+"</td><td>"+name+"</td><td>"+groups+"</td><td>"+questions+"</td><td data-value='"+exams[i].start+"'>"+start+"</td><td data-value='"+exams[i].end+"'>"+end+"</td><td data-value="+(active?1:0)+">"+(active?"Yes":"No")+"</td><td><button class='actionBtn' onclick='showEditExamForm("+id+")'>Edit</button></td></tr>");
             }
 
             appendButton("Create new exam","showEditExamForm()");
@@ -245,6 +243,8 @@ function showEditExamForm(id) {
         placeholder: "Groups"
     });
 
+    var groups = undefined;
+
     $.ajax({
             type: "GET",
             url: "./groups",
@@ -252,11 +252,8 @@ function showEditExamForm(id) {
             headers: {"Authorization":window.localStorage.getItem("token")},
             success: function (result) {
                 var json = JSON.parse(result);
-                json.groups.forEach(function(group) {
-                    var newOption = new Option(group.name, group.id, false, false);
-                    $('#examGroupsOptGroup').append(newOption)/*.trigger('change')*/;
-                });
-                $('#examGroups').trigger('change');
+                groups = json.groups;
+                console.log(groups);
             },
             error: function () {
                 alert("Failed to load groups!");
@@ -264,12 +261,85 @@ function showEditExamForm(id) {
             dataType: "text"
     });
 
+    var selectedGroups = undefined;
+
     if (id != undefined && id != null) {
         //TODO: Load exam data
         //TODO: Change #editExamHeader text to 'Edit [EXAM NAME]'
+        $.ajax({
+            type: "GET",
+            url: "./exams/"+id,
+            dataType: "json",
+            headers: {"Authorization":window.localStorage.getItem("token")},
+            success: function (result) {
+                var json = JSON.parse(result);
+
+                $("#examID").val(json.id);
+                $("#examName").val(json.name);
+                $("#examDesc").val(json.description);
+                $("#examQuestionCount").val(json.questionCount);
+
+                var startString = new Date(json.start).toISOString();
+                var endString = new Date(json.end).toISOString();
+
+                //TODO: FIX - IS ONE DAY BEHIND
+                $("#examStart").val(startString.substring(0,startString.length-1));
+                $("#examEnd").val(endString.substring(0,endString.length-1));
+
+                console.log(json.questions);
+                json.questions.forEach(function (question) {
+                    addQuestionFromJSON(question);
+                });
+
+                selectedGroups = json.groups;
+                console.log(selectedGroups);
+                if (selectedGroups === undefined) selectedGroups = null;
+            },
+            error: function () {
+                alert("Failed to load exam!");
+                selectedGroups = null;
+            },
+            dataType: "text"
+        });
     }
 
-    $("#centerDiv").css("display","inline");
+    var timeoutFunc = function() {
+        if (groups == null || (selectedGroups !== null && selectedGroups == undefined)) {
+            setTimeout(timeoutFunc, 200);
+            return;
+        }
+
+        $("#examGroupsOptGroup").html("");
+        if (groups != null && selectedGroups !== null) {
+            console.log("here");
+            console.log(groups);
+            groups.forEach(function(group) {
+                var selected = false;
+                if (selectedGroups != null) {
+                    selectedGroups.forEach(function (selectedGroup) {
+                        if (group.id == selectedGroup.id) {
+                            selected = true;
+                        }
+                    });
+                }
+
+                var newOption = new Option(group.name, group.id, selected, selected);
+                $('#examGroupsOptGroup').append(newOption)/*.trigger('change')*/;
+            });
+            $('#examGroups').trigger('change');
+        } else {
+            console.log("here2");
+            console.log(groups);
+            groups.forEach(function(group) {
+                var newOption = new Option(group.name, group.id, false, false);
+                $('#examGroupsOptGroup').append(newOption)/*.trigger('change')*/;
+            });
+            $('#examGroups').trigger('change');
+        }
+
+        $("#centerDiv").css("display","inline");
+    };
+    setTimeout(timeoutFunc, 200);
 }
 
 function showEditStudentForm(id) {
@@ -321,6 +391,16 @@ function addQuestion() {
     var questions = $(".question");
 
     var question = $('<div class="question"> <p>Question '+(questions.length+1)+'</p><input name="question" type="text" class="field" placeholder="Question"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)"> <input name="answerB" type="text" class="field" placeholder="Answer B"> <input name="answerC" type="text" class="field" placeholder="Answer C"> <input name="answerD" type="text" class="field" placeholder="Answer D"> </div>');
+    question.insertAfter(questions.get(questions.length - 1));
+
+    var parent = questions.eq(0).parent();
+    parent.scrollTop(parent.prop("scrollHeight"));
+}
+
+function addQuestionFromJSON(question) {
+    var questions = $(".question");
+
+    var question = $('<div class="question"> <p>Question '+(questions.length+1)+'</p><input name="question" type="text" class="field" placeholder="Question" value="'+question.name+'"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)" value="'+question.answers[0].name+'"> <input name="answerB" type="text" class="field" placeholder="Answer B" value="'+question.answers[1].name+'"> <input name="answerC" type="text" class="field" placeholder="Answer C" value="'+question.answers[2].name+'"> <input name="answerD" type="text" class="field" placeholder="Answer D" value="'+question.answers[3].name+'"> </div>');
     question.insertAfter(questions.get(questions.length - 1));
 
     var parent = questions.eq(0).parent();

@@ -146,6 +146,11 @@ table thead th {
     background: #F2F2F2;
 }
 
+.actionBtn {
+    width: 100%;
+    height: 100%;
+}
+
 .greenBtn {
     background-color: #4DDD78;
     color: white;
