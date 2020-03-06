@@ -13,6 +13,22 @@ function formatTime(millis) {
     return hours+":"+minutes+":"+seconds;
 }
 
+function formatTo2Chars(value) {
+    if (String(value).length == 1) return "0"+String(value);
+    else return String(value);
+}
+
+function customISOString(date) {
+    var year = date.getFullYear();
+    var month = formatTo2Chars(date.getMonth()+1);
+    var day = formatTo2Chars(date.getDate());
+    var hours = formatTo2Chars(date.getHours());
+    var minutes = formatTo2Chars(date.getMinutes());
+    var seconds = formatTo2Chars(date.getSeconds());
+
+    return year+"-"+month+"-"+day+"T"+hours+":"+minutes+":"+seconds;
+}
+
 $(document).ready(function() {
     updateUI();
     window.onresize = function(event) {
@@ -237,7 +253,7 @@ function logOut() {
 
 function showEditExamForm(id) {
     //TODO: Add remove question functionality
-    $("#centerDiv").html('<h1 id="editExamHeader">Create new exam</h1> <div class="scrollingForm"> <input id="examID" type="hidden"> <input id="examName" type="text" class="field" placeholder="Name"> <br><input id="examDesc" type="text" class="field" placeholder="Description"> <br><input id="examQuestionCount" type="number" class="field" placeholder="Questions"> <br><select id="examGroups" style="width: 100%; font-size: 14px; margin: 3px 0px 3px 0px;" multiple="multiple"> <optgroup id="examGroupsOptGroup" label="Groups"> </optgroup> </select> <br><br><br><br><br><input id="examStart" class="left" type="datetime-local"> <input id="examEnd" class="right" type="datetime-local"> <br><h2 style="margin: 44px 0px 0px 0px; text-align: left;">Questions:</h2> <br><div class="question"> <p>Question 1</p><input name="id" type="hidden"> <input name="question" type="text" class="field" placeholder="Question"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)"> <input name="answerB" type="text" class="field" placeholder="Answer B"> <input name="answerC" type="text" class="field" placeholder="Answer C"> <input name="answerD" type="text" class="field" placeholder="Answer D"> </div><button id="addQuestionBtn" class="greenBtn" style="margin-top: 10px;" onclick="addQuestion()">Add question</button> </div><button class="greenBtn rightAlign" onclick="saveExam()">Save exam</button>');
+    $("#centerDiv").html('<h1 id="editExamHeader">Create new exam</h1> <div class="scrollingForm"> <input id="examID" type="hidden"> <input id="examName" type="text" class="field" placeholder="Name"> <br><input id="examDesc" type="text" class="field" placeholder="Description"> <br><input id="examQuestionCount" type="number" class="field" placeholder="Questions"> <br><select id="examGroups" style="width: 100%; font-size: 14px; margin: 3px 0px 3px 0px;" multiple="multiple"> <optgroup id="examGroupsOptGroup" label="Groups"> </optgroup> </select> <br><br><br><br><br><input id="examStart" class="left" type="datetime-local"> <input id="examEnd" class="right" type="datetime-local"> <br><h2 style="margin: 44px 0px 0px 0px; text-align: left;">Questions:</h2> <br><button id="addQuestionBtn" class="greenBtn" style="margin-top: 10px;" onclick="addQuestion()">Add question</button> </div><button class="greenBtn rightAlign" onclick="saveExam()">Save exam</button>');
 
     $('#examGroups').select2({
         placeholder: "Groups"
@@ -264,8 +280,7 @@ function showEditExamForm(id) {
     var selectedGroups = undefined;
 
     if (id != undefined && id != null) {
-        //TODO: Load exam data
-        //TODO: Change #editExamHeader text to 'Edit [EXAM NAME]'
+        $("#editExamHeader").text("Edit exam");
         $.ajax({
             type: "GET",
             url: "./exams/"+id,
@@ -279,17 +294,24 @@ function showEditExamForm(id) {
                 $("#examDesc").val(json.description);
                 $("#examQuestionCount").val(json.questionCount);
 
-                var startString = new Date(json.start).toISOString();
-                var endString = new Date(json.end).toISOString();
+                /*var timezoneOffset = (new Date()).getTimezoneOffset() * 60000;
+                var startString = new Date(parseInt(json.start)-timezoneOffset).toISOString();
+                var endString = new Date(parseInt(json.end)-timezoneOffset).toISOString();*/
 
-                //TODO: FIX - IS ONE DAY BEHIND
-                $("#examStart").val(startString.substring(0,startString.length-1));
-                $("#examEnd").val(endString.substring(0,endString.length-1));
+                var startString = customISOString(new Date(json.start));
+                var endString = customISOString(new Date(json.end));
+
+                $("#examStart").val(startString/*.substring(0,startString.length-1)*/);
+                $("#examEnd").val(endString/*.substring(0,endString.length-1)*/);
 
                 console.log(json.questions);
-                json.questions.forEach(function (question) {
-                    addQuestionFromJSON(question);
-                });
+                if (json.questions.length > 0) {
+                    json.questions.forEach(function (question) {
+                        addQuestionFromJSON(question);
+                    });
+                } else {
+                    addQuestion();
+                }
 
                 selectedGroups = json.groups;
                 console.log(selectedGroups);
@@ -301,6 +323,8 @@ function showEditExamForm(id) {
             },
             dataType: "text"
         });
+    } else {
+        addQuestion();
     }
 
     var timeoutFunc = function() {
@@ -387,28 +411,31 @@ function showEditGroupForm(id) {
     $("#centerDiv").css("display","inline");
 }
 
-function addQuestion() {
+function addQuestion(scroll) {
     var questions = $(".question");
 
     var question = $('<div class="question"> <p>Question '+(questions.length+1)+'</p><input name="question" type="text" class="field" placeholder="Question"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)"> <input name="answerB" type="text" class="field" placeholder="Answer B"> <input name="answerC" type="text" class="field" placeholder="Answer C"> <input name="answerD" type="text" class="field" placeholder="Answer D"> </div>');
-    question.insertAfter(questions.get(questions.length - 1));
-
+    //question.insertAfter(questions.get(questions.length - 1));
+    question.insertBefore($("#addQuestionBtn"));
     var parent = questions.eq(0).parent();
-    parent.scrollTop(parent.prop("scrollHeight"));
+    if (scroll == undefined || scroll === true) parent.scrollTop(parent.prop("scrollHeight"));
 }
 
-function addQuestionFromJSON(question) {
+function addQuestionFromJSON(question, scroll) {
     var questions = $(".question");
 
-    var question = $('<div class="question"> <p>Question '+(questions.length+1)+'</p><input name="question" type="text" class="field" placeholder="Question" value="'+question.name+'"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)" value="'+question.answers[0].name+'"> <input name="answerB" type="text" class="field" placeholder="Answer B" value="'+question.answers[1].name+'"> <input name="answerC" type="text" class="field" placeholder="Answer C" value="'+question.answers[2].name+'"> <input name="answerD" type="text" class="field" placeholder="Answer D" value="'+question.answers[3].name+'"> </div>');
+    var question = $('<div class="question"> <p>Question '+(questions.length+1)+'</p><input name="id" type="hidden" value="'+question.id+'"><input name="question" type="text" class="field" placeholder="Question" value="'+question.name+'"> <input name="answerA" type="text" class="field correct" placeholder="Answer A (Correct Answer)" value="'+question.answers[0].name+'"> <input name="answerB" type="text" class="field" placeholder="Answer B" value="'+question.answers[1].name+'"> <input name="answerC" type="text" class="field" placeholder="Answer C" value="'+question.answers[2].name+'"> <input name="answerD" type="text" class="field" placeholder="Answer D" value="'+question.answers[3].name+'"> </div>');
     question.insertAfter(questions.get(questions.length - 1));
 
     var parent = questions.eq(0).parent();
-    parent.scrollTop(parent.prop("scrollHeight"));
+    if (scroll == undefined || scroll === true) parent.scrollTop(parent.prop("scrollHeight"));
 }
 
 function saveExam() {
     var id = $("#examID").val();
+
+    var edit = id != null;
+
     var name = $("#examName").val();
     var description = $("#examDesc").val();
     var questionCount = $("#examQuestionCount").val();
@@ -422,7 +449,8 @@ function saveExam() {
     questions.each(function (i, element) {
         var questionObj = new Object();
         var question = $(element);
-        questionObj.id = question.find("[name=id]").eq(0).val();
+        var questionIDList = question.find("[name=id]");
+        if (edit && questionIDList.length > 0) questionObj.id = questionIDList.eq(0).val();
         questionObj.name = question.find("[name='question']").eq(0).val();
         questionObj.answerA = question.find("[name='answerA']").eq(0).val();
         questionObj.answerB = question.find("[name='answerB']").eq(0).val();
@@ -432,7 +460,6 @@ function saveExam() {
     });
     
     var object = new Object();
-    object.id = id;
     object.name = name;
     object.description = description;
     object.questionCount = questionCount;
@@ -443,22 +470,41 @@ function saveExam() {
 
     var json = JSON.stringify(object);
 
-    $.ajax({
-        type: "POST",
-        data: json,
-        url: "./exams/new",
-        dataType: "json",
-        headers: {"Authorization":window.localStorage.getItem("token")},
-        success: function (result) {
-            showExams();
-            alert("Exam successfully created!");
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            if (jqXHR.status == 400) alert("At least one required field is empty!");
-            else alert("An error ocurred while saving the exam!");
-        },
-        dataType: "text"
-    });
+    if (edit) {
+        $.ajax({
+            type: "POST",
+            data: json,
+            url: "./exams/"+id,
+            dataType: "json",
+            headers: {"Authorization": window.localStorage.getItem("token")},
+            success: function (result) {
+                showExams();
+                alert("Exam successfully created!");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status == 400) alert("At least one required field is empty!");
+                else alert("An error ocurred while saving the exam!");
+            },
+            dataType: "text"
+        });
+    } else {
+        $.ajax({
+            type: "POST",
+            data: json,
+            url: "./exams/new",
+            dataType: "json",
+            headers: {"Authorization": window.localStorage.getItem("token")},
+            success: function (result) {
+                showExams();
+                alert("Exam successfully created!");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status == 400) alert("At least one required field is empty!");
+                else alert("An error ocurred while saving the exam!");
+            },
+            dataType: "text"
+        });
+    }
 }
 
 function saveStudent() {

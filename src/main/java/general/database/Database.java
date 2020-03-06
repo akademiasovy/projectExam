@@ -252,6 +252,10 @@ public class Database {
         }
     }
 
+    public void editExam(Exam exam) {
+        //TODO: Edit exam, Delete old group, question and answer database entries
+    }
+
     public List<Exam> getExams(Student student, boolean includeInactive, boolean includeDone) {
         Set<Exam> examSet = new HashSet<Exam>();
         Date date = new Date();
@@ -320,6 +324,33 @@ public class Database {
 
             List<Exam> examList = session.createQuery(query).list();
             if (examList.size() >= 1) return examList.get(0);
+
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return null;
+    }
+
+    public Question getQuestion(int id) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Question> query = cb.createQuery(Question.class);
+            Root<Question> root = query.from(Question.class);
+
+            Predicate predicate = cb.equal(root.get("id"),id);
+            query.select(root).where(predicate);
+
+            List<Question> questionList = session.createQuery(query).list();
+            if (questionList.size() >= 1) return questionList.get(0);
 
             tx.commit();
         } catch (HibernateException e) {

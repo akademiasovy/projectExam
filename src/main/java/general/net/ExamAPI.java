@@ -46,7 +46,9 @@ public class ExamAPI implements HttpHandler {
             return;
         } else if (reqURI.matches("/exams/\\d+")) {
             try {
-                this.handleExamInfo(exchange, username, Integer.parseInt(reqURI.substring(7,reqURI.length())));
+                if ("POST".equals(exchange.getRequestMethod())) {
+                    this.handleEditExam(exchange, username, Integer.parseInt(reqURI.substring(7,reqURI.length())));
+                } else this.handleExamInfo(exchange, username, Integer.parseInt(reqURI.substring(7,reqURI.length())));
             } catch (Exception ex) {ex.printStackTrace();}
             return;
         } else if (reqURI.matches("/exams/start")) {
@@ -746,6 +748,126 @@ public class ExamAPI implements HttpHandler {
         exam.setQuestionSet(questionSet);
 
         Database.getInstance().createExam(exam);
+
+        exchange.sendResponseHeaders(201, 0);
+        exchange.close();
+    }
+
+    public void handleEditExam(HttpExchange exchange, String username, int examID) throws Exception {
+        if (!"POST".equals(exchange.getRequestMethod())) {
+            exchange.getResponseHeaders().put("Allow", Arrays.asList("POST"));
+            exchange.sendResponseHeaders(405,0);
+            exchange.close();
+            return;
+        }
+
+        User user = Database.getInstance().getCredentials(username).getUser();
+        if (!(user instanceof Teacher)) {
+            exchange.sendResponseHeaders(403,0);
+            exchange.close();
+            return;
+        }
+
+        JSONObject examObject = ((JSONObject)new JSONParser().parse(new InputStreamReader(exchange.getRequestBody())));
+
+        if (!Utils.checkStringField(examObject.get("name"),1,-1) || !Utils.checkStringField(examObject.get("description"),1,-1) ||
+                !Utils.checkIntField(examObject.get("questionCount")) || !Utils.checkLongField(examObject.get("start")) || !Utils.checkLongField(examObject.get("end"))) {
+            exchange.sendResponseHeaders(400, 0);
+            exchange.close();
+            return;
+        }
+
+        Exam exam = Database.getInstance().getExam(examID);
+        if (exam == null) {
+            exchange.sendResponseHeaders(404,0);
+            exchange.close();
+            return;
+        }
+        exam.setName(String.valueOf(examObject.get("name")));
+        exam.setDescription(String.valueOf(examObject.get("description")));
+        exam.setQuestions(Integer.parseInt(String.valueOf(examObject.get("questionCount"))));
+        exam.setStart(new Date(Long.parseLong(String.valueOf(examObject.get("start")))*1000));
+        exam.setEnd(new Date(Long.parseLong(String.valueOf((examObject.get("end"))))*1000));
+
+        HashSet<Group> groupSet = new HashSet<Group>();
+
+        JSONArray groupArray = (JSONArray) examObject.get("groups");
+        List<Group> groups = Database.getInstance().getGroups();
+        groups.clear();
+        for (Object obj : groupArray) {
+            int id = Integer.parseInt(String.valueOf(obj));
+            for (Group group : groups) {
+                if (group.getId() == id) {
+                    groupSet.add(group);
+                    group.getExamSet().add(exam);
+                    System.out.println(group.getName());
+                    break;
+                }
+            }
+        }
+
+        exam.setGroupSet(groupSet);
+
+        HashSet<Question> questionSet = new HashSet<Question>();
+
+        JSONArray questionArray = (JSONArray) examObject.get("questions");
+        for (Object obj : questionArray) {
+            JSONObject questionObject = (JSONObject) obj;
+            if (questionObject.get("id") != null) {
+                int questionID = Integer.parseInt(String.valueOf(questionObject.get("id")));
+                Question question = Database.getInstance().getQuestion(questionID);
+                question.setName((String) questionObject.get("name"));
+                question.setExam(exam);
+
+                int i = 66;
+                for (Answer answer : question.getAnswers()) {
+                    if (answer.isCorrect()) {
+                        answer.setName((String) questionObject.get("answerA"));
+                    } else {
+                        answer.setName((String) questionObject.get("answer"+(char)i));
+                        i++;
+                    }
+                }
+            } else {
+                Question question = new Question();
+                question.setName((String) questionObject.get("name"));
+                question.setExam(exam);
+
+                Answer answerA = new Answer();
+                answerA.setName((String) questionObject.get("answerA"));
+                answerA.setQuestion(question);
+                answerA.setCorrect(true);
+
+                Answer answerB = new Answer();
+                answerB.setName((String) questionObject.get("answerB"));
+                answerB.setQuestion(question);
+                answerB.setCorrect(false);
+
+                Answer answerC = new Answer();
+                answerC.setName((String) questionObject.get("answerC"));
+                answerC.setQuestion(question);
+                answerC.setCorrect(false);
+
+                Answer answerD = new Answer();
+                answerD.setName((String) questionObject.get("answerD"));
+                answerD.setQuestion(question);
+                answerD.setCorrect(false);
+
+                HashSet<Answer> answerSet = new HashSet<Answer>();
+                answerSet.add(answerA);
+                answerSet.add(answerB);
+                answerSet.add(answerC);
+                answerSet.add(answerD);
+                question.setAnswers(answerSet);
+
+                questionSet.add(question);
+            }
+        }
+
+        exam.setQuestionSet(questionSet);
+
+        //Database.getInstance().createExam(exam);
+        Database.getInstance().editExam(exam);
 
         exchange.sendResponseHeaders(201, 0);
         exchange.close();
